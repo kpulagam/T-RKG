@@ -1,91 +1,151 @@
 # T-RKG: Temporal Records Knowledge Graph
 
-A graph-based approach to enterprise records governance with bitemporal modeling, relationship-aware hold propagation, and multi-jurisdictional compliance.
+A domain-specific knowledge graph framework for enterprise records governance with formal ontology, conflict detection, and reasoning capabilities.
 
-## Key Contributions
+## Overview
 
-1. **Graph-based record modeling** with typed relationships (attachment, thread, derivation, reference, container)
-2. **Bitemporal attributes** (valid time + transaction time) for point-in-time queries
-3. **Hold propagation algorithm** traversing relationships for legal discovery
-4. **Multi-jurisdictional support** for SOX, HIPAA, GDPR, FINRA, HGB, PIPEDA
+T-RKG provides:
 
+- **Formal Ontology** (OWL) for records governance concepts
+- **Temporal Graph Store** with bitemporal queries
+- **Typed Hold Propagation** through relationships
+- **Multi-jurisdictional Conflict Detection** (SOX vs GDPR, etc.)
+- **Ontology-based Reasoning** for governance decisions
+
+## Installation
+
+```bash
+pip install -r requirements.txt
+```
 
 ## Quick Start
 
 ```python
-from trkg import TRKGStore, Record, RecordType, RelationType
-from trkg.synthetic import generate_test_dataset
-from datetime import datetime
-
-# Generate sample enterprise data
-store = generate_test_dataset(num_records=10000)
-print(f"Generated {len(store.records)} records, {len(store.relationships)} relationships")
-
-# Query records by type
-emails = store.select_records(lambda r: r.type == RecordType.EMAIL)
-print(f"Found {len(emails)} emails")
-
-# Point-in-time query
-records_2023 = store.query_at_time(datetime(2023, 6, 15))
-print(f"Records as of 2023-06-15: {len(records_2023)}")
-
-# Hold propagation
-seed_records = [r.id for r in emails[:50]]
-propagated = store.propagate_hold(
-    seed_records,
-    relation_types=[RelationType.ATTACHMENT, RelationType.THREAD],
-    max_depth=5
+from trkg import (
+    generate_test_dataset,
+    ConflictDetector,
+    GovernanceReasoner,
+    load_ontology
 )
-print(f"Hold propagation: {len(seed_records)} seeds → {len(propagated)} total")
 
-# Apply legal hold
-store.apply_hold("litigation_2024", list(propagated))
-held = store.get_records_on_hold("litigation_2024")
-print(f"Records on hold: {len(held)}")
+# Generate test data
+store = generate_test_dataset(num_records=10000)
+
+# Detect conflicts
+detector = ConflictDetector(store)
+conflicts = detector.detect_all_conflicts()
+print(f"Found {len(conflicts)} governance conflicts")
+
+# Perform reasoning
+reasoner = GovernanceReasoner(store)
+stats = reasoner.get_reasoning_statistics()
+print(f"Records with conflicts: {stats.records_with_conflicts}")
 ```
-
-## Architecture
-
-```
-┌─────────────────────────────────────────────────────────┐
-│                    T-RKG Store                          │
-├─────────────────────────────────────────────────────────┤
-│  Entities          │  Relationships    │  Operations    │
-│  ─────────         │  ─────────────    │  ──────────    │
-│  • Record          │  • ATTACHMENT     │  • Query       │
-│  • Custodian       │  • THREAD         │  • Propagate   │
-│  • Matter          │  • DERIVATION     │  • Hold/Release│
-│  • System          │  • REFERENCE      │  • Temporal    │
-│                    │  • CONTAINER      │                │
-├─────────────────────────────────────────────────────────┤
-│  Bitemporal: valid_time + transaction_time              │
-└─────────────────────────────────────────────────────────┘
-```
-
-## Performance Results
-
-TBU
 
 ## Project Structure
 
 ```
-t-rkg/
+trkg/
+├── ontology/
+│   └── records_governance.owl    # OWL ontology
 ├── trkg/
 │   ├── __init__.py
-│   ├── schema.py        # Entity definitions
-│   ├── store.py         # Graph storage & queries
-│   └── synthetic.py     # Test data generator
+│   ├── schema.py                 # Data model
+│   ├── store.py                  # Graph storage
+│   ├── synthetic.py              # Data generator
+│   ├── governance.py             # Conflict detection
+│   ├── ontology.py               # Ontology wrapper
+│   └── reasoning.py              # Reasoning engine
 ├── experiments/
-│   └── run_scalability.py
+│   └── run_experiments.py        # KBS experiments
 ├── tests/
 │   └── test_trkg.py
 ├── requirements.txt
-└── README.md
+└── setup.py
 ```
 
 ## Running Experiments
 
 ```bash
-# Reproduce paper experiments
-python experiments/run_scalability.py
+# Run all experiments
+python experiments/run_experiments.py --scale 100000 --output results.json
+
+# Run tests
+python -m pytest tests/
+```
+
+## Key Features
+
+### 1. Formal Ontology
+
+The OWL ontology (`ontology/records_governance.owl`) defines:
+- Record types and relationships
+- Regulations (SOX, GDPR, HIPAA, HGB, etc.)
+- Jurisdictions with hierarchy
+- Conflict types
+- Hold propagation semantics
+
+### 2. Conflict Detection
+
+```python
+from trkg import ConflictDetector
+
+detector = ConflictDetector(store)
+summary = detector.get_conflict_summary()
+# {
+#     "total_conflicts": 123,
+#     "by_type": {"RETENTION_VS_DELETION": 100, ...},
+#     "critical_count": 45
+# }
+```
+
+### 3. Typed Hold Propagation
+
+```python
+from trkg import RelationType
+
+# Only propagate through specific relationship types
+propagated = store.propagate_hold(
+    seed_record_ids=seeds,
+    relation_types=[RelationType.ATTACHMENT, RelationType.THREAD],
+    max_depth=5
+)
+```
+
+### 4. Ontology-based Reasoning
+
+```python
+from trkg import GovernanceReasoner
+
+reasoner = GovernanceReasoner(store)
+result = reasoner.reason_about_record(record)
+# result.inferred_regulations
+# result.conflicts
+# result.recommended_state
+# result.retention_deadline
+```
+
+## Research Questions
+
+The experiments address:
+
+- **RQ1**: Scalability (1K-500K records)
+- **RQ2**: Typed propagation precision
+- **RQ3**: Multi-jurisdictional conflict detection
+- **RQ4**: Ontology coverage analysis
+- **RQ5**: Reasoning performance
+
+## License
+
+MIT License
+
+## Citation
+
+```bibtex
+@article{trkg2025,
+  title={T-RKG: A Temporal Records Knowledge Graph for Enterprise Information Governance},
+  author={...},
+  journal={Knowledge-Based Systems},
+  year={2025}
+}
 ```

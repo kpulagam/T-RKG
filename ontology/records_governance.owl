@@ -1,0 +1,162 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://purl.org/trkg/ontology#"
+     xml:base="http://purl.org/trkg/ontology"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:trkg="http://purl.org/trkg/ontology#"
+     xmlns:dc="http://purl.org/dc/elements/1.1/">
+    
+    <owl:Ontology rdf:about="http://purl.org/trkg/ontology">
+        <dc:title>T-RKG: Temporal Records Knowledge Graph Ontology</dc:title>
+        <dc:description>A formal ontology for enterprise records governance.</dc:description>
+        <owl:versionInfo>2.0.0</owl:versionInfo>
+    </owl:Ontology>
+    
+    <!-- Core Classes -->
+    <owl:Class rdf:about="#Record">
+        <rdfs:label>Record</rdfs:label>
+        <rdfs:comment>An information object subject to governance policies.</rdfs:comment>
+    </owl:Class>
+    
+    <owl:Class rdf:about="#Custodian">
+        <rdfs:label>Custodian</rdfs:label>
+    </owl:Class>
+    
+    <owl:Class rdf:about="#Matter">
+        <rdfs:label>Matter</rdfs:label>
+    </owl:Class>
+    
+    <owl:Class rdf:about="#System">
+        <rdfs:label>System</rdfs:label>
+    </owl:Class>
+    
+    <!-- Governance States -->
+    <owl:Class rdf:about="#GovernanceState"/>
+    
+    <owl:NamedIndividual rdf:about="#Active">
+        <rdf:type rdf:resource="#GovernanceState"/>
+    </owl:NamedIndividual>
+    
+    <owl:NamedIndividual rdf:about="#Hold">
+        <rdf:type rdf:resource="#GovernanceState"/>
+    </owl:NamedIndividual>
+    
+    <owl:NamedIndividual rdf:about="#RetentionRequired">
+        <rdf:type rdf:resource="#GovernanceState"/>
+    </owl:NamedIndividual>
+    
+    <owl:NamedIndividual rdf:about="#MustDelete">
+        <rdf:type rdf:resource="#GovernanceState"/>
+    </owl:NamedIndividual>
+    
+    <!-- Regulations -->
+    <owl:Class rdf:about="#Regulation"/>
+    
+    <owl:NamedIndividual rdf:about="#SOX">
+        <rdf:type rdf:resource="#Regulation"/>
+        <rdfs:label>Sarbanes-Oxley Act</rdfs:label>
+        <trkg:retentionDays>2555</trkg:retentionDays>
+    </owl:NamedIndividual>
+    
+    <owl:NamedIndividual rdf:about="#GDPR">
+        <rdf:type rdf:resource="#Regulation"/>
+        <rdfs:label>GDPR</rdfs:label>
+        <trkg:grantsDeletionRight>true</trkg:grantsDeletionRight>
+    </owl:NamedIndividual>
+    
+    <owl:NamedIndividual rdf:about="#HIPAA">
+        <rdf:type rdf:resource="#Regulation"/>
+        <trkg:retentionDays>2190</trkg:retentionDays>
+    </owl:NamedIndividual>
+    
+    <owl:NamedIndividual rdf:about="#HGB">
+        <rdf:type rdf:resource="#Regulation"/>
+        <trkg:retentionDays>3650</trkg:retentionDays>
+    </owl:NamedIndividual>
+    
+    <owl:NamedIndividual rdf:about="#CPRA">
+        <rdf:type rdf:resource="#Regulation"/>
+        <trkg:grantsDeletionRight>true</trkg:grantsDeletionRight>
+    </owl:NamedIndividual>
+    
+    <!-- Jurisdictions -->
+    <owl:Class rdf:about="#Jurisdiction"/>
+    
+    <owl:NamedIndividual rdf:about="#US">
+        <rdf:type rdf:resource="#Jurisdiction"/>
+    </owl:NamedIndividual>
+    
+    <owl:NamedIndividual rdf:about="#US_CA">
+        <rdf:type rdf:resource="#Jurisdiction"/>
+        <trkg:parentJurisdiction rdf:resource="#US"/>
+    </owl:NamedIndividual>
+    
+    <owl:NamedIndividual rdf:about="#EU">
+        <rdf:type rdf:resource="#Jurisdiction"/>
+    </owl:NamedIndividual>
+    
+    <owl:NamedIndividual rdf:about="#EU_DE">
+        <rdf:type rdf:resource="#Jurisdiction"/>
+        <trkg:parentJurisdiction rdf:resource="#EU"/>
+    </owl:NamedIndividual>
+    
+    <!-- Conflicts -->
+    <owl:Class rdf:about="#GovernanceConflict"/>
+    
+    <owl:Class rdf:about="#RetentionVsDeletionConflict">
+        <rdfs:subClassOf rdf:resource="#GovernanceConflict"/>
+    </owl:Class>
+    
+    <!-- Relationships -->
+    <owl:Class rdf:about="#RecordRelationship"/>
+    
+    <owl:Class rdf:about="#AttachmentRelationship">
+        <rdfs:subClassOf rdf:resource="#RecordRelationship"/>
+        <trkg:propagatesHold>true</trkg:propagatesHold>
+    </owl:Class>
+    
+    <owl:Class rdf:about="#ThreadRelationship">
+        <rdfs:subClassOf rdf:resource="#RecordRelationship"/>
+        <trkg:propagatesHold>true</trkg:propagatesHold>
+    </owl:Class>
+    
+    <!-- Object Properties -->
+    <owl:ObjectProperty rdf:about="#subjectTo">
+        <rdfs:domain rdf:resource="#Record"/>
+        <rdfs:range rdf:resource="#Regulation"/>
+    </owl:ObjectProperty>
+    
+    <owl:ObjectProperty rdf:about="#locatedIn">
+        <rdfs:domain rdf:resource="#Record"/>
+        <rdfs:range rdf:resource="#Jurisdiction"/>
+    </owl:ObjectProperty>
+    
+    <owl:ObjectProperty rdf:about="#hasConflict">
+        <rdfs:domain rdf:resource="#Record"/>
+        <rdfs:range rdf:resource="#GovernanceConflict"/>
+    </owl:ObjectProperty>
+    
+    <owl:ObjectProperty rdf:about="#appliesIn">
+        <rdfs:domain rdf:resource="#Regulation"/>
+        <rdfs:range rdf:resource="#Jurisdiction"/>
+    </owl:ObjectProperty>
+    
+    <!-- Regulation-Jurisdiction Mappings -->
+    <rdf:Description rdf:about="#SOX">
+        <trkg:appliesIn rdf:resource="#US"/>
+        <trkg:appliesIn rdf:resource="#US_CA"/>
+    </rdf:Description>
+    
+    <rdf:Description rdf:about="#GDPR">
+        <trkg:appliesIn rdf:resource="#EU"/>
+        <trkg:appliesIn rdf:resource="#EU_DE"/>
+    </rdf:Description>
+    
+    <rdf:Description rdf:about="#CPRA">
+        <trkg:appliesIn rdf:resource="#US_CA"/>
+    </rdf:Description>
+
+</rdf:RDF>

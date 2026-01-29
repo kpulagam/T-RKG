@@ -1,1 +1,12 @@
-networkx>=3.0
+# Core dependencies
+networkx>=2.6.0
+
+# Optional: For full OWL reasoning (not required for basic functionality)
+# rdflib>=6.0.0
+
+# Testing
+pytest>=7.0.0
+
+# Development
+# black>=22.0.0
+# mypy>=0.950
