@@ -1,0 +1,17 @@
+README.md
+setup.py
+tests/__init__.py
+tests/test_trkg.py
+trkg/__init__.py
+trkg/governance.py
+trkg/ontology.py
+trkg/reasoning.py
+trkg/schema.py
+trkg/store.py
+trkg/synthetic.py
+trkg.egg-info/PKG-INFO
+trkg.egg-info/SOURCES.txt
+trkg.egg-info/dependency_links.txt
+trkg.egg-info/requires.txt
+trkg.egg-info/top_level.txt
+trkg/../ontology/records_governance.owl

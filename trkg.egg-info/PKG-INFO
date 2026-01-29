@@ -1,0 +1,171 @@
+Metadata-Version: 2.1
+Name: trkg
+Version: 2.0.0
+Summary: Temporal Records Knowledge Graph for Enterprise Governance
+Home-page: https://github.com/trkg/trkg
+Author: T-RKG Research Team
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Provides-Extra: dev
+Provides-Extra: owl
+
+# T-RKG: Temporal Records Knowledge Graph
+
+A domain-specific knowledge graph framework for enterprise records governance with formal ontology, conflict detection, and reasoning capabilities.
+
+## Overview
+
+T-RKG provides:
+
+- **Formal Ontology** (OWL) for records governance concepts
+- **Temporal Graph Store** with bitemporal queries
+- **Typed Hold Propagation** through relationships
+- **Multi-jurisdictional Conflict Detection** (SOX vs GDPR, etc.)
+- **Ontology-based Reasoning** for governance decisions
+
+## Installation
+
+```bash
+pip install -r requirements.txt
+```
+
+## Quick Start
+
+```python
+from trkg import (
+    generate_test_dataset,
+    ConflictDetector,
+    GovernanceReasoner,
+    load_ontology
+)
+
+# Generate test data
+store = generate_test_dataset(num_records=10000)
+
+# Detect conflicts
+detector = ConflictDetector(store)
+conflicts = detector.detect_all_conflicts()
+print(f"Found {len(conflicts)} governance conflicts")
+
+# Perform reasoning
+reasoner = GovernanceReasoner(store)
+stats = reasoner.get_reasoning_statistics()
+print(f"Records with conflicts: {stats.records_with_conflicts}")
+```
+
+## Project Structure
+
+```
+trkg/
+├── ontology/
+│   └── records_governance.owl    # OWL ontology
+├── trkg/
+│   ├── __init__.py
+│   ├── schema.py                 # Data model
+│   ├── store.py                  # Graph storage
+│   ├── synthetic.py              # Data generator
+│   ├── governance.py             # Conflict detection
+│   ├── ontology.py               # Ontology wrapper
+│   └── reasoning.py              # Reasoning engine
+├── experiments/
+│   └── run_experiments.py        # KBS experiments
+├── tests/
+│   └── test_trkg.py
+├── requirements.txt
+└── setup.py
+```
+
+## Running Experiments
+
+```bash
+# Run all experiments
+python experiments/run_experiments.py --scale 100000 --output results.json
+
+# Run tests
+python -m pytest tests/
+```
+
+## Key Features
+
+### 1. Formal Ontology
+
+The OWL ontology (`ontology/records_governance.owl`) defines:
+- Record types and relationships
+- Regulations (SOX, GDPR, HIPAA, HGB, etc.)
+- Jurisdictions with hierarchy
+- Conflict types
+- Hold propagation semantics
+
+### 2. Conflict Detection
+
+```python
+from trkg import ConflictDetector
+
+detector = ConflictDetector(store)
+summary = detector.get_conflict_summary()
+# {
+#     "total_conflicts": 123,
+#     "by_type": {"RETENTION_VS_DELETION": 100, ...},
+#     "critical_count": 45
+# }
+```
+
+### 3. Typed Hold Propagation
+
+```python
+from trkg import RelationType
+
+# Only propagate through specific relationship types
+propagated = store.propagate_hold(
+    seed_record_ids=seeds,
+    relation_types=[RelationType.ATTACHMENT, RelationType.THREAD],
+    max_depth=5
+)
+```
+
+### 4. Ontology-based Reasoning
+
+```python
+from trkg import GovernanceReasoner
+
+reasoner = GovernanceReasoner(store)
+result = reasoner.reason_about_record(record)
+# result.inferred_regulations
+# result.conflicts
+# result.recommended_state
+# result.retention_deadline
+```
+
+## Research Questions
+
+The experiments address:
+
+- **RQ1**: Scalability (1K-500K records)
+- **RQ2**: Typed propagation precision
+- **RQ3**: Multi-jurisdictional conflict detection
+- **RQ4**: Ontology coverage analysis
+- **RQ5**: Reasoning performance
+
+## License
+
+MIT License
+
+## Citation
+
+```bibtex
+@article{trkg2025,
+  title={T-RKG: A Temporal Records Knowledge Graph for Enterprise Information Governance},
+  author={...},
+  journal={Knowledge-Based Systems},
+  year={2025}
+}
+```

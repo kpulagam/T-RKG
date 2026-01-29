@@ -1,0 +1,93 @@
+{
+  "metadata": {
+    "run_date": "2026-01-28T22:37:56.812569",
+    "description": "Complete governance lifecycle experiments"
+  },
+  "retention_management": {
+    "total_records": 10000,
+    "with_retention_requirement": 3508,
+    "without_requirement": 6492,
+    "past_retention": 5,
+    "within_retention": 3503,
+    "by_regulation": {
+      "SOX": 2475,
+      "SEC": 3257,
+      "HGB": 55,
+      "IRS": 174
+    },
+    "by_max_period": {
+      "7yr": 2575,
+      "6yr": 878,
+      "10yr": 55
+    }
+  },
+  "legal_hold_management": {
+    "matter": {
+      "id": "matter_smith_v_acme",
+      "name": "Smith v. Acme Corporation",
+      "custodians": 15,
+      "date_range": "2022-01-01 to 2024-01-15"
+    },
+    "direct_records": 620,
+    "propagation_strategies": [
+      {
+        "strategy": "No propagation",
+        "direct_records": 620,
+        "total_after_propagation": 620,
+        "additional_records": 0,
+        "expansion_ratio": 1.0
+      },
+      {
+        "strategy": "Attachments only",
+        "direct_records": 620,
+        "total_after_propagation": 877,
+        "additional_records": 257,
+        "expansion_ratio": 1.41
+      },
+      {
+        "strategy": "Attachments + Threads",
+        "direct_records": 620,
+        "total_after_propagation": 1263,
+        "additional_records": 643,
+        "expansion_ratio": 2.04
+      },
+      {
+        "strategy": "All propagating types",
+        "direct_records": 620,
+        "total_after_propagation": 1294,
+        "additional_records": 674,
+        "expansion_ratio": 2.09
+      }
+    ],
+    "final_hold_count": 1263,
+    "hold_vs_deletion_conflicts": 106,
+    "audit_events": 1263
+  },
+  "disposition_management": {
+    "total_records": 10000,
+    "eligible_for_deletion": 5425,
+    "must_delete_gdpr": 773,
+    "blocked_by_hold": 500,
+    "blocked_by_retention": 3213,
+    "gdpr_blocked_by_hold": 31,
+    "requires_legal_review": 89,
+    "summary": {
+      "can_delete_pct": 62.0,
+      "blocked_pct": 37.1,
+      "needs_review_pct": 1.2
+    }
+  },
+  "governance_decision": {
+    "total_records": 10000,
+    "reasoning_time_ms": 90.0,
+    "records_with_retention": 3508,
+    "records_with_deletion_rights": 1019,
+    "records_with_conflicts": 232,
+    "state_distribution": {
+      "RETENTION_REQUIRED": 3503,
+      "ACTIVE": 5576,
+      "ELIGIBLE_FOR_DELETION": 921
+    },
+    "avg_regulations_per_record": 0.698
+  }
+}
