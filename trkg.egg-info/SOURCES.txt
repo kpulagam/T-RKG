@@ -1,5 +1,12 @@
+LICENSE
 README.md
 setup.py
+experiments/__init__.py
+experiments/multinational.py
+experiments/run_experiments.py
+experiments/run_governance_usecases.py
+experiments/run_kbs_experiments.py
+experiments/run_scalability.py
 tests/__init__.py
 tests/test_trkg.py
 trkg/__init__.py
@@ -15,3 +22,5 @@ trkg.egg-info/dependency_links.txt
 trkg.egg-info/requires.txt
 trkg.egg-info/top_level.txt
 trkg/../ontology/records_governance.owl
+trkg/datasets/__init__.py
+trkg/datasets/enron.py

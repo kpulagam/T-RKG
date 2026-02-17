@@ -153,12 +153,26 @@ class TRKGStore:
         as_of = as_of or datetime.now()
         results = []
         
+        def is_valid_at(rel, check_time):
+            """Check if relationship is valid at given time, handling timezones."""
+            valid_from = rel.valid_from
+            valid_to = rel.valid_to
+            check = check_time
+            # Strip timezone for comparison if needed
+            if hasattr(valid_from, 'tzinfo') and valid_from.tzinfo is not None:
+                valid_from = valid_from.replace(tzinfo=None)
+            if valid_to and hasattr(valid_to, 'tzinfo') and valid_to.tzinfo is not None:
+                valid_to = valid_to.replace(tzinfo=None)
+            if hasattr(check, 'tzinfo') and check.tzinfo is not None:
+                check = check.replace(tzinfo=None)
+            return valid_from <= check and (valid_to is None or valid_to > check)
+        
         if direction in ("outgoing", "both"):
             for _, target, data in self.graph.out_edges(record_id, data=True):
                 rel_id = data.get("relationship_id")
                 if rel_id and rel_id in self.relationships:
                     rel = self.relationships[rel_id]
-                    if rel.valid_from <= as_of and (rel.valid_to is None or rel.valid_to > as_of):
+                    if is_valid_at(rel, as_of):
                         if relation_types is None or rel.relation_type in relation_types:
                             results.append((target, rel.relation_type))
         
@@ -167,7 +181,7 @@ class TRKGStore:
                 rel_id = data.get("relationship_id")
                 if rel_id and rel_id in self.relationships:
                     rel = self.relationships[rel_id]
-                    if rel.valid_from <= as_of and (rel.valid_to is None or rel.valid_to > as_of):
+                    if is_valid_at(rel, as_of):
                         if relation_types is None or rel.relation_type in relation_types:
                             results.append((source, rel.relation_type))
         

@@ -1,0 +1,250 @@
+
+======================================================================
+  T-RKG EXPERIMENTS FOR KNOWLEDGE-BASED SYSTEMS
+======================================================================
+
+  Focus: UNIQUE capabilities missing from enterprise ECM systems
+  NOT comparing: Performance against databases (not our claim)
+
+======================================================================
+  RQ1: SCALABILITY
+======================================================================
+
+  Testing 1,000 records...
+    Generation: 0.012s (81,888/sec)
+    Query: 0.15ms
+    Propagation: 0.97ms → 177 records
+
+  Testing 5,000 records...
+    Generation: 0.068s (73,687/sec)
+    Query: 1.26ms
+    Propagation: 0.81ms → 151 records
+
+  Testing 10,000 records...
+    Generation: 0.126s (79,097/sec)
+    Query: 2.73ms
+    Propagation: 1.25ms → 230 records
+
+  Testing 25,000 records...
+    Generation: 0.369s (67,738/sec)
+    Query: 8.78ms
+    Propagation: 0.98ms → 184 records
+
+  Testing 50,000 records...
+    Generation: 0.780s (64,071/sec)
+    Query: 17.01ms
+    Propagation: 1.20ms → 183 records
+
+  Testing 100,000 records...
+    Generation: 1.837s (54,436/sec)
+    Query: 40.41ms
+    Propagation: 1.79ms → 234 records
+
+======================================================================
+  RQ2: TYPED HOLD PROPAGATION (Unique Capability)
+======================================================================
+
+  Dataset: 10,000 records, 2,781 relationships
+  Seed records: 50 from Engineering department
+
+  --- Propagation Strategy Comparison ---
+  Strategy                       |  Seeds |  Total |  Added |  Ratio
+  ---------------------------------------------------------------------------
+  No propagation (baseline)      |     50 |     50 |     +0 |  1.00x
+  ATTACHMENT only                |     50 |     76 |    +26 |  1.52x
+  THREAD only                    |     50 |     96 |    +46 |  1.92x
+  ATTACHMENT + THREAD            |     50 |    167 |   +117 |  3.34x
+  All types (untyped equivalent) |     50 |    186 |   +136 |  3.72x
+
+  --- Key Finding ---
+  Typed propagation (ATT+THREAD): 167 records
+  Untyped propagation (all):      186 records
+  Over-inclusion avoided:         19 records (11.4%)
+
+  Without typed propagation, 19 records would require
+  unnecessary manual review by legal team.
+
+======================================================================
+  RQ3: CROSS-JURISDICTIONAL CONFLICT DETECTION (Unique Capability)
+======================================================================
+
+  Dataset: 10,000 records
+
+  --- Conflict Detection Results ---
+  Detection time: 18.20ms
+  Total conflicts: 267
+  Affected records: 232
+  Critical conflicts: 202
+  Requires legal review: 202
+
+  By Regulation Pair:
+    SOX vs GDPR: 178
+    SOX vs CPRA: 47
+    SEC vs GDPR: 24
+    SOX vs HGB: 18
+
+  By Severity:
+    HIGH: 47
+    CRITICAL: 202
+    MEDIUM: 18
+
+  By Conflict Type:
+    RETENTION_VS_DELETION: 249
+    MULTI_RETENTION: 18
+
+  --- Example Conflicts ---
+
+  Record: email_000095 (EMAIL)
+    Jurisdiction: US_CA
+    Contains PII: True
+    Conflict: SOX vs CPRA
+    Severity: HIGH
+    Recommendation: SOX takes precedence; CPRA has compliance exemption
+
+  Record: email_000102 (EMAIL)
+    Jurisdiction: US_CA
+    Contains PII: True
+    Conflict: SOX vs CPRA
+    Severity: HIGH
+    Recommendation: SOX takes precedence; CPRA has compliance exemption
+
+  Record: email_000521 (EMAIL)
+    Jurisdiction: US_CA
+    Contains PII: True
+    Conflict: SOX vs CPRA
+    Severity: HIGH
+    Recommendation: SOX takes precedence; CPRA has compliance exemption
+
+  --- Key Finding ---
+  T-RKG detected 267 governance conflicts that
+  would be INVISIBLE to traditional ECM systems.
+  202 CRITICAL conflicts (SOX↔GDPR, SEC↔GDPR)
+  require immediate legal review.
+
+======================================================================
+  RQ4: MULTI-REGULATION RETENTION REASONING (Unique Capability)
+======================================================================
+
+  Dataset: 10,000 records
+
+  Encoded Regulations: 5
+    - SOX: 2555 days (7yr)
+    - SEC: 2190 days (6yr)
+    - HIPAA: 2190 days (6yr)
+    - HGB: 3650 days (10yr)
+    - IRS: 2555 days (7yr)
+
+  --- Retention Analysis ---
+  Records with retention requirement: 3,508
+  Records without requirement: 6,492
+  Records with MULTIPLE regulations: 2,379
+
+  By Regulation:
+    SEC: 3,257
+    SOX: 2,475
+    IRS: 174
+    HGB: 55
+
+  By Retention Period:
+    10yr: 55
+    6yr: 878
+    7yr: 2,575
+
+  --- Multi-Regulation Examples ---
+
+  Record: email_000000 (EMAIL)
+    Jurisdiction: US
+    Applicable rules:
+      - SOX: 7yr
+      - SEC: 6yr
+    Final deadline: 2028-05-30
+    (Longest retention period applied)
+
+  Record: email_000001 (EMAIL)
+    Jurisdiction: US
+    Applicable rules:
+      - SOX: 7yr
+      - SEC: 6yr
+    Final deadline: 2030-02-24
+    (Longest retention period applied)
+
+  Record: email_000002 (EMAIL)
+    Jurisdiction: US
+    Applicable rules:
+      - SOX: 7yr
+      - SEC: 6yr
+    Final deadline: 2029-12-04
+    (Longest retention period applied)
+
+  --- Key Finding ---
+  2,379 records are subject to MULTIPLE regulations.
+  T-RKG automatically applies the longest retention period.
+  This capability does not exist in traditional ECM systems.
+
+======================================================================
+  RQ5: EXPLAINABLE GOVERNANCE DECISIONS (Unique Capability)
+======================================================================
+
+  Dataset: 10,000 records
+
+  --- Reasoning Performance ---
+  Total reasoning time: 108.5ms
+  Time per record: 0.011ms
+
+  --- Coverage Statistics ---
+  Records with retention requirements: 3,508
+  Records with deletion rights: 1,019
+  Records with conflicts: 232
+  Average regulations per record: 0.70
+
+  --- Explainable Decision Examples ---
+
+  Record: email_000095
+    Type: EMAIL
+    Jurisdiction: US_CA
+    Contains PII: True
+    
+    ┌─ GOVERNANCE DECISION ─────────────────────────
+    │ State: RETENTION_REQUIRED
+    │
+    │ Applicable Regulations:
+    │   • SOX
+    │   • SEC
+    │   • CPRA
+    │
+    │ Retention Requirements:
+    │   • SOX: 2555 days (7 years)
+    │   • SEC: 2190 days (6 years)
+    │
+    │ Deletion Rights: CPRA
+    │
+    │ ⚠ CONFLICTS DETECTED:
+    │   • SOX vs CPRA
+    │     Severity: HIGH
+    │     Resolution: SOX takes precedence; CPRA has compliance exemption
+    └────────────────────────────────────────────────
+
+  Record: email_000102
+    Type: EMAIL
+    Jurisdiction: US_CA
+    Contains PII: True
+    
+    ┌─ GOVERNANCE DECISION ─────────────────────────
+    │ State: RETENTION_REQUIRED
+    │
+    │ Applicable Regulations:
+    │   • SOX
+    │   • SEC
+    │   • CPRA
+    │
+    │ Retention Requirements:
+    │   • SOX: 2555 days (7 years)
+    │   • SEC: 2190 days (6 years)
+    │
+    │ Deletion Rights: CPRA
+    │
+    │ ⚠ CONFLICTS DETECTED:
+    │   • SOX vs CPRA
+    │     Severity: HIGH
+    │     Resolution: SOX takes precedence; CPRA has compliance exemption
+    └────────────────────────────────────────────────

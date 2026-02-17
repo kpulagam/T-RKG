@@ -1,0 +1,193 @@
+{
+  "metadata": {
+    "run_date": "2026-01-29T05:03:55.306523",
+    "version": "2.0.0",
+    "note": "Experiments focus on unique T-RKG capabilities, not database comparison"
+  },
+  "scalability": [
+    {
+      "records": 1000,
+      "relationships": 279,
+      "custodians": 20,
+      "gen_time_avg": 0.014,
+      "throughput": 73559,
+      "query_time_avg_ms": 0.17,
+      "prop_time_avg_ms": 1.18,
+      "prop_count_avg": 177
+    },
+    {
+      "records": 5000,
+      "relationships": 1331,
+      "custodians": 50,
+      "gen_time_avg": 0.069,
+      "throughput": 72473,
+      "query_time_avg_ms": 1.24,
+      "prop_time_avg_ms": 0.86,
+      "prop_count_avg": 151
+    },
+    {
+      "records": 10000,
+      "relationships": 2704,
+      "custodians": 100,
+      "gen_time_avg": 0.135,
+      "throughput": 74077,
+      "query_time_avg_ms": 2.77,
+      "prop_time_avg_ms": 1.38,
+      "prop_count_avg": 230
+    },
+    {
+      "records": 25000,
+      "relationships": 6952,
+      "custodians": 250,
+      "gen_time_avg": 0.409,
+      "throughput": 61086,
+      "query_time_avg_ms": 8.52,
+      "prop_time_avg_ms": 1.09,
+      "prop_count_avg": 184
+    },
+    {
+      "records": 50000,
+      "relationships": 13870,
+      "custodians": 500,
+      "gen_time_avg": 0.783,
+      "throughput": 63882,
+      "query_time_avg_ms": 16.28,
+      "prop_time_avg_ms": 1.11,
+      "prop_count_avg": 183
+    },
+    {
+      "records": 100000,
+      "relationships": 28095,
+      "custodians": 1000,
+      "gen_time_avg": 1.765,
+      "throughput": 56669,
+      "query_time_avg_ms": 43.21,
+      "prop_time_avg_ms": 1.7,
+      "prop_count_avg": 234
+    }
+  ],
+  "typed_propagation": {
+    "strategies": [
+      {
+        "strategy": "No propagation (baseline)",
+        "seed_count": 50,
+        "propagated_avg": 50,
+        "additional": 0,
+        "expansion_ratio": 1.0,
+        "time_avg_ms": 0.003
+      },
+      {
+        "strategy": "ATTACHMENT only",
+        "seed_count": 50,
+        "propagated_avg": 76,
+        "additional": 26,
+        "expansion_ratio": 1.52,
+        "time_avg_ms": 0.432
+      },
+      {
+        "strategy": "THREAD only",
+        "seed_count": 50,
+        "propagated_avg": 96,
+        "additional": 46,
+        "expansion_ratio": 1.92,
+        "time_avg_ms": 0.532
+      },
+      {
+        "strategy": "ATTACHMENT + THREAD",
+        "seed_count": 50,
+        "propagated_avg": 167,
+        "additional": 117,
+        "expansion_ratio": 3.34,
+        "time_avg_ms": 0.899
+      },
+      {
+        "strategy": "All types (untyped equivalent)",
+        "seed_count": 50,
+        "propagated_avg": 186,
+        "additional": 136,
+        "expansion_ratio": 3.72,
+        "time_avg_ms": 1.067
+      }
+    ],
+    "over_inclusion_avoided": 19,
+    "over_inclusion_pct": 11.4
+  },
+  "conflict_detection": {
+    "total_conflicts": 267,
+    "affected_records": 232,
+    "by_type": {
+      "RETENTION_VS_DELETION": 249,
+      "MULTI_RETENTION": 18
+    },
+    "by_severity": {
+      "HIGH": 47,
+      "CRITICAL": 202,
+      "MEDIUM": 18
+    },
+    "by_regulation_pair": {
+      "SOX vs CPRA": 47,
+      "SOX vs GDPR": 178,
+      "SOX vs HGB": 18,
+      "SEC vs GDPR": 24
+    },
+    "critical_count": 202,
+    "requires_legal_review": 202,
+    "detection_time_ms": 18.69
+  },
+  "retention_reasoning": {
+    "total_records": 10000,
+    "with_retention": 3508,
+    "without_retention": 6492,
+    "multi_regulation_records": 2379,
+    "by_regulation": {
+      "SOX": 2475,
+      "SEC": 3257,
+      "HGB": 55,
+      "IRS": 174
+    },
+    "by_period": {
+      "7yr": 2575,
+      "6yr": 878,
+      "10yr": 55
+    }
+  },
+  "explainability": {
+    "total_records": 10000,
+    "reasoning_time_ms": 125.6,
+    "time_per_record_ms": 0.013,
+    "records_with_retention": 3508,
+    "records_with_deletion_rights": 1019,
+    "records_with_conflicts": 232,
+    "avg_regulations_per_record": 0.7
+  },
+  "enron_validation": {
+    "status": "success",
+    "is_real_data": false,
+    "data_source": "Synthetic Enron-like data",
+    "emails": 10000,
+    "relationships": 1681,
+    "custodians": 64,
+    "matters": 3,
+    "conflicts_detected": 0,
+    "propagation": {
+      "matter": "SEC v. Enron Corporation",
+      "direct_records": 100,
+      "propagated_records": 141,
+      "additional_found": 41,
+      "expansion_ratio": 1.41
+    },
+    "retention": {
+      "sox_applicable": 10000,
+      "sec_applicable": 10000,
+      "financial_records": 3561
+    }
+  },
+  "ablation": {
+    "full_propagated": 83,
+    "untyped_propagated": 85,
+    "no_propagation": 50,
+    "over_inclusion_from_untyped": 2,
+    "missed_without_propagation": 33,
+    "conflicts_detected": 267
+  }
+}

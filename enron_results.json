@@ -1,0 +1,15 @@
+{
+  "metadata": {
+    "run_date": "2026-01-28T23:42:35.132076",
+    "is_real_data": true
+  },
+  "dataset": {
+    "records": 50000,
+    "relationships": 11932
+  },
+  "retention": {
+    "with_retention": 10000,
+    "multi_regulation": 10000
+  },
+  "conflicts": 0
+}

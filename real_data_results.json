@@ -1,0 +1,76 @@
+{
+  "metadata": {
+    "run_date": "2026-01-28T23:33:58.370422",
+    "is_real_data": true,
+    "data_source": {
+      "emails_processed": 50000,
+      "emails_skipped": 131115,
+      "threads_found": 0,
+      "attachments_found": 0,
+      "custodians": 26,
+      "is_real_data": true
+    }
+  },
+  "dataset": {
+    "records": 50000,
+    "relationships": 0,
+    "custodians": 26,
+    "matters": 2
+  },
+  "typed_propagation": [
+    {
+      "strategy": "No propagation",
+      "seeds": 0,
+      "propagated": 0,
+      "expansion": 0
+    },
+    {
+      "strategy": "THREAD only",
+      "seeds": 0,
+      "propagated": 0,
+      "expansion": 0
+    },
+    {
+      "strategy": "ATTACHMENT only",
+      "seeds": 0,
+      "propagated": 0,
+      "expansion": 0
+    },
+    {
+      "strategy": "THREAD + ATTACHMENT",
+      "seeds": 0,
+      "propagated": 0,
+      "expansion": 0
+    },
+    {
+      "strategy": "All types",
+      "seeds": 0,
+      "propagated": 0,
+      "expansion": 0
+    }
+  ],
+  "over_inclusion_avoided": 0,
+  "conflict_detection": {
+    "total_conflicts": 0,
+    "affected_records": 0,
+    "by_severity": {},
+    "by_regulation_pair": {},
+    "detection_time_ms": 138.53
+  },
+  "retention_reasoning": {
+    "with_retention": 50000,
+    "multi_regulation": 50000,
+    "by_regulation": {
+      "SOX": 50000,
+      "SEC": 50000
+    }
+  },
+  "explainability": {
+    "total_records": 50000,
+    "reasoning_time_ms": 747.8,
+    "time_per_record_ms": 0.015,
+    "records_with_retention": 50000,
+    "records_with_deletion_rights": 0,
+    "records_with_conflicts": 0
+  }
+}

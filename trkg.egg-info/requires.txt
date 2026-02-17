@@ -1,9 +1,9 @@
 networkx>=2.6.0
 
 [dev]
+pytest>=7.0.0
 black>=22.0.0
 mypy>=0.950
-pytest>=7.0.0
 
 [owl]
 rdflib>=6.0.0

@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "run_date": "2026-01-28T22:37:56.812569",
+    "run_date": "2026-01-29T04:34:04.744452",
     "description": "Complete governance lifecycle experiments"
   },
   "retention_management": {
@@ -79,7 +79,7 @@
   },
   "governance_decision": {
     "total_records": 10000,
-    "reasoning_time_ms": 90.0,
+    "reasoning_time_ms": 100.3,
     "records_with_retention": 3508,
     "records_with_deletion_rights": 1019,
     "records_with_conflicts": 232,

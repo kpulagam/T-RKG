@@ -156,7 +156,13 @@ class GovernanceReasoner:
             return GovernanceState.HOLD
         if retention_reqs:
             max_days = max(retention_reqs.values())
-            if datetime.now() > record.created + timedelta(days=max_days):
+            # Handle timezone-aware vs naive datetime comparison
+            now = datetime.now()
+            created = record.created
+            # Strip timezone if present for comparison
+            if hasattr(created, 'tzinfo') and created.tzinfo is not None:
+                created = created.replace(tzinfo=None)
+            if now > created + timedelta(days=max_days):
                 return GovernanceState.ELIGIBLE_FOR_DELETION
             return GovernanceState.RETENTION_REQUIRED
         if deletion_rights and not retention_reqs:

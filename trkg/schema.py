@@ -219,7 +219,14 @@ class Relationship:
     @property
     def is_current(self) -> bool:
         now = datetime.now()
-        return self.valid_from <= now and (self.valid_to is None or self.valid_to > now)
+        valid_from = self.valid_from
+        valid_to = self.valid_to
+        # Handle timezone-aware datetimes
+        if hasattr(valid_from, 'tzinfo') and valid_from.tzinfo is not None:
+            valid_from = valid_from.replace(tzinfo=None)
+        if valid_to and hasattr(valid_to, 'tzinfo') and valid_to.tzinfo is not None:
+            valid_to = valid_to.replace(tzinfo=None)
+        return valid_from <= now and (valid_to is None or valid_to > now)
 
 
 @dataclass 
