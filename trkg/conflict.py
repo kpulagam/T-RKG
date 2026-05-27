@@ -1,15 +1,6 @@
 """
-T-RKG Conflict Detection: Ontology-Based Regulatory Reasoning
-
-Implements the core conflict detection pipeline:
-1. Regulatory applicability inference (which regulations apply to which records)
-2. Pairwise conflict detection (which regulation pairs conflict)
-3. Conflict classification and severity assessment
-4. Resolution guidance generation
-
-This module is the primary novel contribution — it demonstrates that
-ontology-based reasoning detects conflicts architecturally invisible
-to siloed systems.
+Ontology-based regulatory conflict detection: applicability inference,
+pairwise conflict checking, severity classification, and resolution guidance.
 """
 
 from dataclasses import dataclass, field
@@ -18,7 +9,7 @@ from typing import List, Dict, Set, Tuple, Optional
 from collections import defaultdict
 
 from trkg.schema import (
-    Record, RecordType, Jurisdiction, Regulation,
+    Record, RecordType, Jurisdiction, Regulation, Matter,
     GovernanceState, ConflictType, ConflictSeverity, RegulatoryConflict
 )
 
@@ -27,8 +18,7 @@ from trkg.schema import (
 # JURISDICTION HIERARCHY
 # =============================================================================
 
-# Models the ontology's jurisdiction subsumption:
-# US_CA is-a US, EU_DE is-a EU, etc.
+# Jurisdiction subsumption (US_CA is-a US, EU_DE is-a EU, etc.).
 JURISDICTION_HIERARCHY: Dict[Jurisdiction, List[Jurisdiction]] = {
     Jurisdiction.US_CA: [Jurisdiction.US_CA, Jurisdiction.US, Jurisdiction.GLOBAL],
     Jurisdiction.US_NY: [Jurisdiction.US_NY, Jurisdiction.US, Jurisdiction.GLOBAL],
@@ -44,7 +34,6 @@ JURISDICTION_HIERARCHY: Dict[Jurisdiction, List[Jurisdiction]] = {
 
 
 def get_ancestor_jurisdictions(j: Jurisdiction) -> List[Jurisdiction]:
-    """Return jurisdiction and all its ancestors in the hierarchy."""
     return JURISDICTION_HIERARCHY.get(j, [j, Jurisdiction.GLOBAL])
 
 
@@ -64,12 +53,7 @@ class RegulatoryRequirement:
 
 @dataclass
 class RegulationProfile:
-    """
-    Defines when a regulation applies to a record and what it requires.
-
-    This encodes the ontological knowledge: regulation scope (record types,
-    jurisdictions, attributes) and requirements (retain, delete, protect).
-    """
+    """Scope (record types, jurisdictions, attributes) and requirements for a regulation."""
     regulation: Regulation
 
     # Applicability conditions (all must be true for regulation to apply)
@@ -83,12 +67,7 @@ class RegulationProfile:
     requirements: List[RegulatoryRequirement] = field(default_factory=list)
 
     def applies_to(self, record: Record) -> bool:
-        """
-        Ontology-based applicability inference.
-
-        Checks record type, jurisdiction hierarchy, and attribute conditions
-        to determine if this regulation governs the given record.
-        """
+        """Return True if this regulation governs the given record."""
         # Check record type scope
         if self.applicable_record_types:
             if record.type not in self.applicable_record_types:
@@ -131,22 +110,10 @@ class RegulationProfile:
 # =============================================================================
 
 def build_regulation_profiles() -> Dict[Regulation, RegulationProfile]:
-    """
-    Construct the regulatory knowledge base.
-
-    Each profile encodes:
-    - WHEN a regulation applies (scope)
-    - WHAT it requires (retain/delete/protect)
-
-    This is the formal knowledge that enables conflict detection —
-    without these profiles, the system cannot reason about applicability.
-    """
+    """Return the built-in regulation profiles."""
 
     profiles = {}
 
-    # ----- GDPR (EU General Data Protection Regulation) -----
-    # Applies to: records containing PII in EU jurisdictions
-    # Requires: deletion on request (Art. 17), data minimization
     profiles[Regulation.GDPR] = RegulationProfile(
         regulation=Regulation.GDPR,
         applicable_record_types=set(),  # All types
@@ -171,13 +138,9 @@ def build_regulation_profiles() -> Dict[Regulation, RegulationProfile]:
         ]
     )
 
-    # ----- SOX (Sarbanes-Oxley Act) -----
-    # Applies to: financial/audit records of public companies
-    # Requires: 7-year retention for audit workpapers
-    # Note: SOX has extraterritorial reach — applies to ALL subsidiaries
-    # of US-listed companies regardless of location (established in case law).
-    # A German subsidiary's financial records are subject to SOX if the
-    # parent is listed on a US exchange.
+    # SOX reaches subsidiaries of US-listed companies regardless of location,
+    # so applicable_jurisdictions is intentionally empty and applicability is
+    # gated on is_public_company.
     profiles[Regulation.SOX] = RegulationProfile(
         regulation=Regulation.SOX,
         applicable_record_types={
@@ -197,9 +160,6 @@ def build_regulation_profiles() -> Dict[Regulation, RegulationProfile]:
         ]
     )
 
-    # ----- HIPAA (Health Insurance Portability and Accountability Act) -----
-    # Applies to: records containing PHI in US jurisdictions
-    # Requires: 6-year retention, security safeguards
     profiles[Regulation.HIPAA] = RegulationProfile(
         regulation=Regulation.HIPAA,
         applicable_record_types=set(),  # Any type can contain PHI
@@ -224,9 +184,6 @@ def build_regulation_profiles() -> Dict[Regulation, RegulationProfile]:
         ]
     )
 
-    # ----- SEC (Securities and Exchange Commission) -----
-    # Applies to: financial records, broker-dealer communications
-    # Requires: 5-year retention (SEC 17a-4), 3 years readily accessible
     profiles[Regulation.SEC] = RegulationProfile(
         regulation=Regulation.SEC,
         applicable_record_types={
@@ -246,9 +203,6 @@ def build_regulation_profiles() -> Dict[Regulation, RegulationProfile]:
         ]
     )
 
-    # ----- FINRA (Financial Industry Regulatory Authority) -----
-    # Applies to: financial communications
-    # Requires: 3-year retention for general correspondence
     profiles[Regulation.FINRA] = RegulationProfile(
         regulation=Regulation.FINRA,
         applicable_record_types={
@@ -269,9 +223,6 @@ def build_regulation_profiles() -> Dict[Regulation, RegulationProfile]:
         ]
     )
 
-    # ----- CPRA (California Privacy Rights Act) -----
-    # Applies to: records containing PII of California residents
-    # Requires: deletion on request, data minimization
     profiles[Regulation.CPRA] = RegulationProfile(
         regulation=Regulation.CPRA,
         applicable_record_types=set(),  # All types
@@ -287,7 +238,6 @@ def build_regulation_profiles() -> Dict[Regulation, RegulationProfile]:
         ]
     )
 
-    # ----- PIPEDA (Canadian privacy law) -----
     profiles[Regulation.PIPEDA] = RegulationProfile(
         regulation=Regulation.PIPEDA,
         applicable_record_types=set(),
@@ -303,9 +253,6 @@ def build_regulation_profiles() -> Dict[Regulation, RegulationProfile]:
         ]
     )
 
-    # ----- IRS (Internal Revenue Service) -----
-    # Applies to: tax records
-    # Requires: 3-7 year retention depending on type
     profiles[Regulation.IRS] = RegulationProfile(
         regulation=Regulation.IRS,
         applicable_record_types={RecordType.TAX, RecordType.FINANCIAL},
@@ -323,9 +270,6 @@ def build_regulation_profiles() -> Dict[Regulation, RegulationProfile]:
         ]
     )
 
-    # ----- HGB (German Commercial Code) -----
-    # Applies to: business records in Germany
-    # Requires: 10-year retention for accounting documents
     profiles[Regulation.HGB] = RegulationProfile(
         regulation=Regulation.HGB,
         applicable_record_types={
@@ -364,15 +308,8 @@ class ConflictRule:
 
 
 def build_conflict_rules() -> List[ConflictRule]:
-    """
-    Define pairwise conflict rules between regulations.
-
-    A conflict exists when two regulations apply to the same record
-    and their requirements are incompatible.
-    """
+    """Return pairwise conflict rules between regulations."""
     return [
-        # --- RETENTION vs. DELETION conflicts ---
-
         ConflictRule(
             regulation_a=Regulation.GDPR,
             regulation_b=Regulation.SOX,
@@ -400,7 +337,6 @@ def build_conflict_rules() -> List[ConflictRule]:
             description="GDPR deletion vs HGB 10-year commercial record retention in Germany",
             resolution_guidance="HGB retention prevails as lawful basis under GDPR Art. 6(1)(c); document legal obligation basis.",
         ),
-
         ConflictRule(
             regulation_a=Regulation.CPRA,
             regulation_b=Regulation.SOX,
@@ -436,9 +372,6 @@ def build_conflict_rules() -> List[ConflictRule]:
             description="PIPEDA data minimization conflicts with SOX retention for cross-border companies",
             resolution_guidance="Assess whether SOX applies to Canadian subsidiary records. If yes, SOX prevails.",
         ),
-
-        # --- JURISDICTION conflicts ---
-
         ConflictRule(
             regulation_a=Regulation.GDPR,
             regulation_b=Regulation.CPRA,
@@ -456,9 +389,6 @@ def build_conflict_rules() -> List[ConflictRule]:
             description="EU and Canadian privacy laws both apply to records in transit",
             resolution_guidance="GDPR generally stricter; compliance with GDPR typically satisfies PIPEDA.",
         ),
-
-        # --- PRIORITY conflicts (different retention periods) ---
-
         ConflictRule(
             regulation_a=Regulation.SOX,
             regulation_b=Regulation.SEC,
@@ -526,22 +456,21 @@ class ConflictDetectionResult:
 
 
 class ConflictDetector:
-    """
-    Ontology-based regulatory conflict detector.
-
-    Uses regulation profiles (ontological knowledge) to:
-    1. Infer which regulations apply to each record
-    2. Check pairwise conflict rules
-    3. Classify and assess severity
-    """
+    """Ontology-based regulatory conflict detector."""
 
     def __init__(
         self,
         profiles: Optional[Dict[Regulation, RegulationProfile]] = None,
-        conflict_rules: Optional[List[ConflictRule]] = None
+        conflict_rules: Optional[List[ConflictRule]] = None,
+        matters: Optional[Dict[str, "Matter"]] = None,
     ):
         self.profiles = profiles or build_regulation_profiles()
         self.conflict_rules = conflict_rules or build_conflict_rules()
+        # Optional matter lookup enables GDPR Art. 17(3) exemption suppression
+        # on Hold-Deletion conflicts. If absent, no suppression is applied.
+        self.matters: Dict[str, "Matter"] = matters or {}
+        # Suppressions during the most recent detect_all_conflicts call.
+        self.suppressed_exemption_count: int = 0
 
         # Build fast lookup: (reg_a, reg_b) -> ConflictRule
         self._conflict_lookup: Dict[Tuple[Regulation, Regulation], ConflictRule] = {}
@@ -549,18 +478,27 @@ class ConflictDetector:
             self._conflict_lookup[(rule.regulation_a, rule.regulation_b)] = rule
             self._conflict_lookup[(rule.regulation_b, rule.regulation_a)] = rule
 
+    def _exemption_holds(self, record: "Record", del_reg: Regulation) -> bool:
+        """Return True if a GDPR Art. 17(3) exemption suppresses this conflict.
+
+        Triggers only when the deletion regulation is GDPR and one of the
+        matters holding the record carries an active legal_obligation_flag
+        (Art. 17(3)(b)) or legal_claim_flag (Art. 17(3)(e)).
+        """
+        if del_reg != Regulation.GDPR:
+            return False
+        if not self.matters or not record.hold_matters:
+            return False
+        for matter_id in record.hold_matters:
+            m = self.matters.get(matter_id)
+            if m is None:
+                continue
+            if m.legal_obligation_flag or m.legal_claim_flag:
+                return True
+        return False
+
     def infer_applicable_regulations(self, record: Record) -> Set[Regulation]:
-        """
-        Determine which regulations apply to a given record.
-
-        This is the ontological inference step — it reasons over:
-        - Record type vs. regulation scope
-        - Jurisdiction hierarchy
-        - PII/PHI flags
-        - Metadata conditions
-
-        Returns the set of applicable regulations.
-        """
+        """Return the set of regulations whose profile matches the record."""
         applicable = set()
         for regulation, profile in self.profiles.items():
             if profile.applies_to(record):
@@ -573,17 +511,7 @@ class ConflictDetector:
         applicable: Optional[Set[Regulation]] = None,
         active_holds: Optional[List[str]] = None
     ) -> List[RegulatoryConflict]:
-        """
-        Detect all regulatory conflicts for a single record.
-
-        Args:
-            record: The record to analyze
-            applicable: Pre-computed applicable regulations (or None to compute)
-            active_holds: List of active matter IDs for hold-deletion conflicts
-
-        Returns:
-            List of detected conflicts
-        """
+        """Detect all regulatory conflicts for a single record."""
         if applicable is None:
             applicable = self.infer_applicable_regulations(record)
 
@@ -633,6 +561,12 @@ class ConflictDetector:
                           if any(req.requirement_type == "DELETE"
                                 for req in self.profiles[r].requirements)]
             for del_reg in delete_regs:
+                # GDPR Art. 17(3) exemption: a matter holding the record with
+                # a legal_obligation or legal_claim basis lawfully suspends
+                # the erasure right, so no conflict is emitted.
+                if self._exemption_holds(record, del_reg):
+                    self.suppressed_exemption_count += 1
+                    continue
                 conflict = RegulatoryConflict(
                     id=f"conflict_{record.id}_HOLD_{del_reg.value}",
                     record_id=record.id,
@@ -657,13 +591,11 @@ class ConflictDetector:
         records: Dict[str, Record],
         active_hold_matters: Optional[Set[str]] = None
     ) -> ConflictDetectionResult:
-        """
-        Run full conflict detection across all records.
-
-        This is the main entry point for Experiment 1.
-        """
+        """Run conflict detection over all records."""
         import time
         start = time.perf_counter()
+
+        self.suppressed_exemption_count = 0
 
         all_conflicts: List[RegulatoryConflict] = []
         records_with_conflicts = 0
@@ -673,13 +605,11 @@ class ConflictDetector:
         conflict_by_pair: Dict[str, int] = defaultdict(int)
 
         for record in records.values():
-            # Step 1: Infer applicable regulations
             applicable = self.infer_applicable_regulations(record)
 
             for reg in applicable:
                 reg_applicability[reg.value] += 1
 
-            # Step 2: Detect conflicts
             conflicts = self.detect_conflicts_for_record(
                 record, applicable, active_hold_matters
             )
@@ -708,7 +638,6 @@ class ConflictDetector:
         )
 
     def _get_requirement_summary(self, regulation: Regulation) -> str:
-        """Get a human-readable summary of regulation requirements."""
         profile = self.profiles.get(regulation)
         if not profile:
             return f"{regulation.value}: unknown requirements"
@@ -727,67 +656,100 @@ class ConflictDetector:
 # =============================================================================
 
 class SiloedConflictDetector:
-    """
-    Baseline: detects conflicts within a single system's knowledge.
+    """Baseline: per-system conflict detection without cross-system knowledge.
 
-    In a siloed architecture, each system only knows about its own records
-    and the regulations relevant to its domain. The email system doesn't know
-    about SOX; the ERP doesn't know about GDPR for its records' PII status
-    (because PII classification happens in the email/DMS system).
-
-    This baseline demonstrates that siloed systems detect ZERO cross-regulation
-    conflicts because they lack unified regulatory knowledge.
+    Each source system runs an independent conflict pass restricted to the
+    regulation set it would normally enforce. The 0-conflict outcome is an
+    empirical observation, not an assumption: pairwise rules within each
+    system's intra-domain regulation set simply never fire.
     """
 
-    # What each system "knows" about regulations
     SYSTEM_REGULATIONS = {
-        "sys_email": {Regulation.FINRA},           # Email archiving rules
-        "sys_dms": {Regulation.INTERNAL},            # Internal retention only
-        "sys_chat": {Regulation.FINRA},              # Communications compliance
-        "sys_crm": {Regulation.INTERNAL},            # CRM data governance
-        "sys_erp": {Regulation.SOX, Regulation.SEC, Regulation.IRS},  # Financial only
+        "sys_email": {Regulation.FINRA},
+        "sys_dms":   {Regulation.INTERNAL},
+        "sys_chat":  {Regulation.FINRA},
+        "sys_crm":   {Regulation.INTERNAL},
+        "sys_erp":   {Regulation.SOX, Regulation.SEC, Regulation.IRS},
     }
+
+    def __init__(
+        self,
+        profiles: Optional[Dict[Regulation, "RegulationProfile"]] = None,
+        conflict_rules: Optional[List["ConflictRule"]] = None,
+    ):
+        self.profiles = profiles or build_regulation_profiles()
+        self.conflict_rules = conflict_rules or build_conflict_rules()
+        self._conflict_lookup: Dict[Tuple[Regulation, Regulation], "ConflictRule"] = {}
+        for rule in self.conflict_rules:
+            self._conflict_lookup[(rule.regulation_a, rule.regulation_b)] = rule
+            self._conflict_lookup[(rule.regulation_b, rule.regulation_a)] = rule
 
     def detect_all_conflicts(
         self,
-        records: Dict[str, Record]
+        records: Dict[str, Record],
     ) -> ConflictDetectionResult:
-        """
-        Siloed conflict detection — each record checked only against
-        its source system's known regulations.
-
-        Result: effectively zero cross-regulation conflicts, because
-        no single system knows about both GDPR and SOX, or both CPRA and SEC.
-        """
         import time
         start = time.perf_counter()
 
-        all_conflicts = []
+        all_conflicts: List[RegulatoryConflict] = []
         records_with_conflicts = 0
+        reg_applicability: Dict[str, int] = defaultdict(int)
+        conflict_by_type: Dict[str, int] = defaultdict(int)
+        conflict_by_severity: Dict[str, int] = defaultdict(int)
+        conflict_by_pair: Dict[str, int] = defaultdict(int)
 
         for record in records.values():
-            system_regs = self.SYSTEM_REGULATIONS.get(record.system_id, set())
-            # A single system typically enforces at most 1-2 regulations
-            # and they don't conflict with each other within the same domain
-            # (e.g., SOX and SEC both say "retain" — no conflict)
-            # Cross-domain conflicts (GDPR vs SOX) are invisible
-            if len(system_regs) < 2:
+            allowed = self.SYSTEM_REGULATIONS.get(record.system_id, set())
+            if not allowed:
                 continue
-            # Even with 2+ regs, they're same-domain and don't conflict
-            # (SOX, SEC, IRS are all "retain" for financial records)
+
+            applicable: Set[Regulation] = set()
+            for reg in allowed:
+                profile = self.profiles.get(reg)
+                if profile is not None and profile.applies_to(record):
+                    applicable.add(reg)
+                    reg_applicability[reg.value] += 1
+
+            if len(applicable) < 2:
+                continue
+
+            regs = sorted(applicable, key=lambda r: r.value)
+            local_hits = []
+            for i, reg_a in enumerate(regs):
+                for reg_b in regs[i + 1:]:
+                    rule = self._conflict_lookup.get((reg_a, reg_b))
+                    if rule is None:
+                        continue
+                    conflict = RegulatoryConflict(
+                        id=f"siloed_{record.id}_{reg_a.value}_{reg_b.value}",
+                        record_id=record.id,
+                        regulation_a=rule.regulation_a,
+                        regulation_b=rule.regulation_b,
+                        conflict_type=rule.conflict_type,
+                        severity=rule.severity,
+                        resolution_guidance=rule.resolution_guidance,
+                    )
+                    local_hits.append(conflict)
+                    conflict_by_type[rule.conflict_type.value] += 1
+                    conflict_by_severity[rule.severity.value] += 1
+                    conflict_by_pair[f"{reg_a.value}-{reg_b.value}"] += 1
+
+            if local_hits:
+                records_with_conflicts += 1
+                all_conflicts.extend(local_hits)
 
         elapsed = (time.perf_counter() - start) * 1000
 
         return ConflictDetectionResult(
             total_records_analyzed=len(records),
-            records_with_conflicts=0,
-            total_conflicts=0,
-            conflicts=[],
-            conflicts_by_type={},
-            conflicts_by_severity={},
-            conflicts_by_regulation_pair={},
+            records_with_conflicts=records_with_conflicts,
+            total_conflicts=len(all_conflicts),
+            conflicts=all_conflicts,
+            conflicts_by_type=dict(conflict_by_type),
+            conflicts_by_severity=dict(conflict_by_severity),
+            conflicts_by_regulation_pair=dict(conflict_by_pair),
             detection_time_ms=elapsed,
-            regulation_applicability={},
+            regulation_applicability=dict(reg_applicability),
         )
 
 
@@ -796,46 +758,104 @@ class SiloedConflictDetector:
 # =============================================================================
 
 class UntypedGraphConflictDetector:
+    """Baseline: unified record graph with naive regulation tagging from
+    record_type and system_id only -- no jurisdiction subsumption, PII/PHI
+    flags, or metadata conditions. The per-record applicable set rarely
+    exceeds one, so pairwise rules typically do not fire.
     """
-    Baseline: graph structure but no ontological regulatory reasoning.
 
-    Has a unified view of records (unlike siloed), but lacks the regulatory
-    profiles / ontological knowledge to infer which regulations apply.
+    SYSTEM_DEFAULT_REGULATIONS = {
+        "sys_email": {Regulation.FINRA},
+        "sys_chat":  {Regulation.FINRA},
+        "sys_dms":   {Regulation.INTERNAL},
+        "sys_crm":   {Regulation.INTERNAL},
+        "sys_erp":   {Regulation.SOX, Regulation.SEC, Regulation.IRS},
+    }
+    TYPE_DEFAULT_REGULATIONS = {
+        RecordType.FINANCIAL: {Regulation.SOX, Regulation.SEC},
+        RecordType.AUDIT:     {Regulation.SOX},
+        RecordType.WORKPAPER: {Regulation.SOX},
+        RecordType.INVOICE:   {Regulation.SEC, Regulation.IRS},
+        RecordType.TAX:       {Regulation.IRS},
+        RecordType.MEDICAL:   {Regulation.HIPAA},
+    }
 
-    Without ontological inference, it cannot determine that a record in
-    EU jurisdiction with PII is subject to GDPR, or that a financial
-    record of a public company is subject to SOX.
-    """
+    def __init__(
+        self,
+        conflict_rules: Optional[List["ConflictRule"]] = None,
+    ):
+        self.conflict_rules = conflict_rules or build_conflict_rules()
+        self._conflict_lookup: Dict[Tuple[Regulation, Regulation], "ConflictRule"] = {}
+        for rule in self.conflict_rules:
+            self._conflict_lookup[(rule.regulation_a, rule.regulation_b)] = rule
+            self._conflict_lookup[(rule.regulation_b, rule.regulation_a)] = rule
+
+    def _naive_applicable(self, record: Record) -> Set[Regulation]:
+        # Tagging depends only on system_id and record type, so the
+        # generator's fixed allocation of 500 financial records per seed
+        # produces a constant 1500-conflict count at 10K (3 SOX/SEC/IRS
+        # priority pairs per financial record).
+        regs: Set[Regulation] = set()
+        regs |= self.SYSTEM_DEFAULT_REGULATIONS.get(record.system_id, set())
+        regs |= self.TYPE_DEFAULT_REGULATIONS.get(record.type, set())
+        return regs
 
     def detect_all_conflicts(
         self,
-        records: Dict[str, Record]
+        records: Dict[str, Record],
     ) -> ConflictDetectionResult:
-        """
-        Untyped graph conflict detection — records are unified but
-        regulatory applicability cannot be inferred without ontology.
-
-        Could detect conflicts IF regulations were manually tagged on records,
-        but that's exactly what the ontology automates.
-        """
         import time
         start = time.perf_counter()
 
-        # Without regulation profiles, the system cannot determine applicability.
-        # It sees all records but doesn't know which regulations apply to which.
-        # A naive approach: tag records by system_id, but that gives same result
-        # as siloed (ERP records get SOX, email records get nothing useful).
+        all_conflicts: List[RegulatoryConflict] = []
+        records_with_conflicts = 0
+        reg_applicability: Dict[str, int] = defaultdict(int)
+        conflict_by_type: Dict[str, int] = defaultdict(int)
+        conflict_by_severity: Dict[str, int] = defaultdict(int)
+        conflict_by_pair: Dict[str, int] = defaultdict(int)
+
+        for record in records.values():
+            applicable = self._naive_applicable(record)
+            for reg in applicable:
+                reg_applicability[reg.value] += 1
+            if len(applicable) < 2:
+                continue
+
+            regs = sorted(applicable, key=lambda r: r.value)
+            local_hits = []
+            for i, reg_a in enumerate(regs):
+                for reg_b in regs[i + 1:]:
+                    rule = self._conflict_lookup.get((reg_a, reg_b))
+                    if rule is None:
+                        continue
+                    conflict = RegulatoryConflict(
+                        id=f"untyped_{record.id}_{reg_a.value}_{reg_b.value}",
+                        record_id=record.id,
+                        regulation_a=rule.regulation_a,
+                        regulation_b=rule.regulation_b,
+                        conflict_type=rule.conflict_type,
+                        severity=rule.severity,
+                        resolution_guidance=rule.resolution_guidance,
+                    )
+                    local_hits.append(conflict)
+                    conflict_by_type[rule.conflict_type.value] += 1
+                    conflict_by_severity[rule.severity.value] += 1
+                    conflict_by_pair[f"{reg_a.value}-{reg_b.value}"] += 1
+
+            if local_hits:
+                records_with_conflicts += 1
+                all_conflicts.extend(local_hits)
 
         elapsed = (time.perf_counter() - start) * 1000
 
         return ConflictDetectionResult(
             total_records_analyzed=len(records),
-            records_with_conflicts=0,
-            total_conflicts=0,
-            conflicts=[],
-            conflicts_by_type={},
-            conflicts_by_severity={},
-            conflicts_by_regulation_pair={},
+            records_with_conflicts=records_with_conflicts,
+            total_conflicts=len(all_conflicts),
+            conflicts=all_conflicts,
+            conflicts_by_type=dict(conflict_by_type),
+            conflicts_by_severity=dict(conflict_by_severity),
+            conflicts_by_regulation_pair=dict(conflict_by_pair),
             detection_time_ms=elapsed,
-            regulation_applicability={},
+            regulation_applicability=dict(reg_applicability),
         )

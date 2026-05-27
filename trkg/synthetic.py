@@ -1,8 +1,4 @@
-"""
-Synthetic Data Generator for T-RKG Experiments
-
-Generates realistic enterprise records, relationships, and governance scenarios.
-"""
+"""Synthetic record/relationship/matter generator for T-RKG experiments."""
 
 import random
 from datetime import datetime, timedelta
@@ -36,6 +32,13 @@ class GeneratorConfig:
     pii_probability: float = 0.15
     phi_probability: float = 0.05
     jurisdiction_weights: Dict[Jurisdiction, float] = None
+
+    # Label noise applied after generation; breaks the 1-1 correspondence
+    # between generator output and ontology predicate so recovery accuracy
+    # becomes a non-trivial quantity.
+    noise_jurisdiction_flip: float = 0.0
+    noise_pii_flip: float = 0.0
+    noise_metadata_flip: float = 0.0
 
     def __post_init__(self):
         if self.jurisdiction_weights is None:
@@ -90,9 +93,41 @@ class SyntheticDataGenerator:
         self._generate_systems()
         self._generate_custodians()
         self._generate_records()
+        # Snapshot clean labels as ground truth before noise injection.
+        self._snapshot_clean_labels()
+        self._inject_label_noise()
         self._generate_relationships()
         self._generate_matters()
         return self.store
+
+    def _snapshot_clean_labels(self):
+        """Snapshot pre-noise labels as ground truth."""
+        self.clean_labels = {}
+        for rid, rec in self.store.records.items():
+            self.clean_labels[rid] = {
+                "jurisdiction":      rec.jurisdiction,
+                "contains_pii":      rec.contains_pii,
+                "contains_phi":      rec.contains_phi,
+                "is_public_company": bool(rec.metadata.get("is_public_company", False)),
+            }
+
+    def _inject_label_noise(self):
+        """Flip jurisdiction, PII, and is_public_company labels per configured rates."""
+        cfg = self.config
+        if (cfg.noise_jurisdiction_flip <= 0 and cfg.noise_pii_flip <= 0
+                and cfg.noise_metadata_flip <= 0):
+            return
+        all_jurisdictions = list(Jurisdiction)
+        for rec in self.store.records.values():
+            if cfg.noise_jurisdiction_flip > 0 and random.random() < cfg.noise_jurisdiction_flip:
+                alt = [j for j in all_jurisdictions if j != rec.jurisdiction]
+                rec.jurisdiction = random.choice(alt)
+            if cfg.noise_pii_flip > 0 and random.random() < cfg.noise_pii_flip:
+                rec.contains_pii = not rec.contains_pii
+            if cfg.noise_metadata_flip > 0:
+                if "is_public_company" in rec.metadata:
+                    if random.random() < cfg.noise_metadata_flip:
+                        rec.metadata["is_public_company"] = not rec.metadata["is_public_company"]
 
     def _generate_systems(self):
         systems = [
@@ -394,11 +429,18 @@ class SyntheticDataGenerator:
         ]
         for i, (name, mtype, scope) in enumerate(templates[:self.config.num_matters]):
             cust_ids = [c.id for c in self.store.custodians.values() if c.department in scope][:20]
+            # GDPR Art. 17(3) flags sampled independently of any conflict-
+            # causing structure; conditioning them on conflict outcome would
+            # leak information into the evaluation. Independent Bernoulli(0.05).
+            legal_obl = random.random() < 0.05
+            legal_clm = random.random() < 0.05
             matter = Matter(
                 id=f"matter_{i:03d}", name=name, matter_type=mtype,
                 custodian_ids=cust_ids, keywords=scope,
                 hold_start=self._random_date(datetime(2024, 1, 1), datetime(2024, 6, 30)),
-                is_active=True
+                is_active=True,
+                legal_obligation_flag=legal_obl,
+                legal_claim_flag=legal_clm,
             )
             self.store.add_matter(matter)
 

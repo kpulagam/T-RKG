@@ -1,10 +1,5 @@
-"""
-SQLite Baseline: Relational database approach.
-
-Records in a table, relationships in a junction table.
-Hold propagation via recursive CTE. Queries via SQL.
-
-This is a REAL baseline with actual SQLite operations.
+"""SQLite baseline: records and relationships in tables; hold propagation
+via recursive CTE with an iterative fallback.
 """
 
 import sqlite3
@@ -15,11 +10,7 @@ from trkg.schema import Record, Relationship, RelationType, RecordType, Jurisdic
 
 
 class SQLiteStore:
-    """
-    Baseline store using SQLite relational database.
-
-    Represents a traditional RDBMS approach to records governance.
-    """
+    """SQLite-backed baseline store."""
 
     def __init__(self, db_path: str = ":memory:"):
         self.conn = sqlite3.connect(db_path)
@@ -102,7 +93,6 @@ class SQLiteStore:
         self.conn.commit()
 
     def select_records_by_type(self, record_type: RecordType) -> List[str]:
-        """SQL query by type."""
         cursor = self.conn.execute(
             "SELECT id FROM records WHERE type = ?",
             (record_type.value,)
@@ -110,7 +100,6 @@ class SQLiteStore:
         return [row[0] for row in cursor.fetchall()]
 
     def query_at_time(self, query_time: datetime) -> List[str]:
-        """SQL temporal query."""
         cursor = self.conn.execute(
             "SELECT id FROM records WHERE created <= ?",
             (query_time.isoformat(),)
@@ -124,32 +113,23 @@ class SQLiteStore:
         max_depth: int = 5,
         as_of: Optional[datetime] = None
     ) -> Set[str]:
-        """
-        Hold propagation using recursive CTE.
-
-        This is the standard SQL approach to graph traversal.
-        """
+        """Hold propagation via recursive CTE; depth-bounded by max_depth."""
         as_of = as_of or datetime.now()
         as_of_str = as_of.isoformat()
         rel_type_list = ",".join(f"'{rt.value}'" for rt in relation_types)
 
-        # Build seed list as a VALUES clause
         if not seed_record_ids:
             return set()
 
         seed_values = ",".join(f"('{sid}')" for sid in seed_record_ids)
 
-        # Recursive CTE for graph traversal
-        # max_depth is enforced by the depth counter
         query = f"""
             WITH RECURSIVE hold_propagation(record_id, depth) AS (
-                -- Base case: seed records
                 SELECT column1 as record_id, 0 as depth
                 FROM (VALUES {seed_values})
 
                 UNION
 
-                -- Recursive case: follow relationships
                 SELECT
                     CASE
                         WHEN r.source_id = hp.record_id THEN r.target_id
@@ -172,7 +152,6 @@ class SQLiteStore:
             cursor = self.conn.execute(query)
             return {row[0] for row in cursor.fetchall()}
         except sqlite3.OperationalError:
-            # Fallback: iterative approach if CTE fails
             return self._propagate_iterative(
                 seed_record_ids, relation_types, max_depth, as_of_str, rel_type_list
             )
@@ -180,7 +159,6 @@ class SQLiteStore:
     def _propagate_iterative(
         self, seeds, relation_types, max_depth, as_of_str, rel_type_list
     ) -> Set[str]:
-        """Fallback iterative propagation using individual SQL queries per hop."""
         visited: Set[str] = set()
         frontier: Set[str] = set(seeds)
         depth = 0
@@ -215,7 +193,6 @@ class SQLiteStore:
 
     @staticmethod
     def from_trkg_store(store) -> 'SQLiteStore':
-        """Convert a TRKGStore to SQLiteStore for fair comparison."""
         sql_store = SQLiteStore()
         for record in store.records.values():
             sql_store.add_record(record)

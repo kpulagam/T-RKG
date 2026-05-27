@@ -1,9 +1,4 @@
-"""
-T-RKG: Temporal Records Knowledge Graph
-
-A graph-based approach to enterprise records governance with bitemporal modeling,
-relationship-aware hold propagation, and multi-jurisdictional compliance.
-"""
+"""T-RKG: Temporal Records Knowledge Graph."""
 
 from trkg.schema import (
     Record,

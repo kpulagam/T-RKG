@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 540" font-family="Helvetica, Arial, sans-serif" font-size="13">
+  <!-- T-RKG System Architecture (Figure 1) -->
+
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#444"/>
+    </marker>
+    <linearGradient id="lg-source" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#dde8f5"/>
+      <stop offset="100%" stop-color="#b9cee5"/>
+    </linearGradient>
+    <linearGradient id="lg-kb" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fff7d6"/>
+      <stop offset="100%" stop-color="#ffe89a"/>
+    </linearGradient>
+    <linearGradient id="lg-reason" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#dcecdc"/>
+      <stop offset="100%" stop-color="#b3d4b3"/>
+    </linearGradient>
+    <linearGradient id="lg-app" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f5dcdc"/>
+      <stop offset="100%" stop-color="#e2b3b3"/>
+    </linearGradient>
+  </defs>
+
+  <!-- TITLE -->
+  <text x="440" y="24" text-anchor="middle" font-size="15" font-weight="bold">
+    Figure 1: T-RKG System Architecture
+  </text>
+
+  <!-- LAYER 1: Source Systems -->
+  <text x="20" y="76" font-weight="bold" fill="#333">1. Source Systems (content stays in place)</text>
+  <g stroke="#3870ad" stroke-width="1">
+    <rect x="20"  y="86" width="120" height="48" rx="6" fill="url(#lg-source)"/>
+    <rect x="160" y="86" width="120" height="48" rx="6" fill="url(#lg-source)"/>
+    <rect x="300" y="86" width="120" height="48" rx="6" fill="url(#lg-source)"/>
+    <rect x="440" y="86" width="120" height="48" rx="6" fill="url(#lg-source)"/>
+    <rect x="580" y="86" width="120" height="48" rx="6" fill="url(#lg-source)"/>
+  </g>
+  <g text-anchor="middle">
+    <text x="80"  y="108">Email</text>     <text x="80"  y="124" font-size="11" fill="#666">(Exchange)</text>
+    <text x="220" y="108">DMS</text>       <text x="220" y="124" font-size="11" fill="#666">(SharePoint)</text>
+    <text x="360" y="108">Chat</text>      <text x="360" y="124" font-size="11" fill="#666">(Slack)</text>
+    <text x="500" y="108">CRM</text>       <text x="500" y="124" font-size="11" fill="#666">(Salesforce)</text>
+    <text x="640" y="108">ERP</text>       <text x="640" y="124" font-size="11" fill="#666">(SAP)</text>
+  </g>
+
+  <!-- LAYER 2: Connectors -->
+  <text x="20" y="176" font-weight="bold" fill="#333">2. Metadata + relationship connectors (lightweight, read-only)</text>
+  <rect x="20" y="184" width="780" height="38" rx="6" fill="#eef3f9" stroke="#3870ad"/>
+  <text x="410" y="208" text-anchor="middle">
+    Custodians · Record metadata · Inter-record relationships · Jurisdictional tags · PII / PHI flags
+  </text>
+  <line x1="80"  y1="134" x2="80"  y2="184" stroke="#444" marker-end="url(#arr)"/>
+  <line x1="220" y1="134" x2="220" y2="184" stroke="#444" marker-end="url(#arr)"/>
+  <line x1="360" y1="134" x2="360" y2="184" stroke="#444" marker-end="url(#arr)"/>
+  <line x1="500" y1="134" x2="500" y2="184" stroke="#444" marker-end="url(#arr)"/>
+  <line x1="640" y1="134" x2="640" y2="184" stroke="#444" marker-end="url(#arr)"/>
+
+  <!-- LAYER 3: T-RKG Knowledge Base (ABox / TBox / RBox) -->
+  <text x="20" y="252" font-weight="bold" fill="#333">3. T-RKG Knowledge Base</text>
+  <rect x="20" y="262" width="780" height="120" rx="8" fill="url(#lg-kb)" stroke="#b88f00"/>
+  <g text-anchor="middle">
+    <rect x="40"  y="278" width="232" height="92" rx="6" fill="#fff" stroke="#b88f00"/>
+    <text x="156" y="300" font-weight="bold">ABox (assertions)</text>
+    <text x="156" y="320" font-size="11">Record / Custodian / Matter</text>
+    <text x="156" y="336" font-size="11">instances + reified, typed</text>
+    <text x="156" y="352" font-size="11">Relationship instances</text>
+
+    <rect x="284" y="278" width="232" height="92" rx="6" fill="#fff" stroke="#b88f00"/>
+    <text x="400" y="300" font-weight="bold">TBox (ontology)</text>
+    <text x="400" y="320" font-size="11">47 classes · 5 modules · 23</text>
+    <text x="400" y="336" font-size="11">object properties · jurisdictional</text>
+    <text x="400" y="352" font-size="11">subsumption hierarchy</text>
+
+    <rect x="528" y="278" width="252" height="92" rx="6" fill="#fff" stroke="#b88f00"/>
+    <text x="654" y="300" font-weight="bold">RBox (rules)</text>
+    <text x="654" y="320" font-size="11">14 pairwise conflict rules ·</text>
+    <text x="654" y="336" font-size="11">Axioms 1–3 (applicability,</text>
+    <text x="654" y="352" font-size="11">conflict, hold-propagation)</text>
+  </g>
+  <line x1="410" y1="222" x2="410" y2="262" stroke="#444" marker-end="url(#arr)"/>
+
+  <!-- LAYER 4: Reasoning -->
+  <text x="20" y="412" font-weight="bold" fill="#333">4. Reasoning Engine</text>
+  <rect x="20" y="420" width="780" height="46" rx="8" fill="url(#lg-reason)" stroke="#3a7a3a"/>
+  <g text-anchor="middle">
+    <text x="180" y="442" font-weight="bold">Forward chaining</text>
+    <text x="180" y="458" font-size="11">materialised hold + conflict views</text>
+
+    <line x1="318" y1="430" x2="318" y2="460" stroke="#3a7a3a" stroke-dasharray="3,3"/>
+
+    <text x="440" y="442" font-weight="bold">Backward chaining</text>
+    <text x="440" y="458" font-size="11">on-demand point-in-time queries</text>
+
+    <line x1="556" y1="430" x2="556" y2="460" stroke="#3a7a3a" stroke-dasharray="3,3"/>
+
+    <text x="680" y="442" font-weight="bold">Bitemporal index</text>
+    <text x="680" y="458" font-size="11">valid-time + transaction-time</text>
+  </g>
+  <line x1="410" y1="382" x2="410" y2="420" stroke="#444" marker-end="url(#arr)"/>
+
+  <!-- LAYER 5: Applications / Outputs -->
+  <text x="20" y="496" font-weight="bold" fill="#333">5. Governance Applications</text>
+  <rect x="20" y="504" width="780" height="28" rx="6" fill="url(#lg-app)" stroke="#a44"/>
+  <text x="410" y="523" text-anchor="middle">
+    Cross-system legal hold · Conflict-aware GDPR/CPRA workflow · Multi-jurisdiction audit · Audit trail
+  </text>
+  <line x1="410" y1="466" x2="410" y2="504" stroke="#444" marker-end="url(#arr)"/>
+</svg>

@@ -1,9 +1,4 @@
-"""
-T-RKG Schema: Temporal Records Knowledge Graph
-
-Defines the core entity types, relationship types, and governance states
-for enterprise records management.
-"""
+"""Entity, relationship, and governance types for the T-RKG graph."""
 
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -108,9 +103,6 @@ class ConflictSeverity(Enum):
 
 @dataclass
 class Record:
-    """
-    A record in the knowledge graph.
-    """
     id: str
     type: RecordType
     title: str
@@ -187,6 +179,11 @@ class Matter:
     date_range_end: Optional[datetime] = None
     case_number: str = ""
     counsel: str = ""
+    # GDPR Article 17(3) exemption flags.
+    # legal_obligation_flag: §17(3)(b) -- compliance with a legal obligation.
+    # legal_claim_flag: §17(3)(e) -- establishment/exercise/defence of claims.
+    legal_obligation_flag: bool = False
+    legal_claim_flag: bool = False
     metadata: Dict[str, Any] = field(default_factory=dict)
 
 
@@ -308,9 +305,7 @@ class DeletionRule:
 
 @dataclass
 class RegulatoryConflict:
-    """
-    A detected conflict between two regulations for a specific record.
-    """
+    """A detected conflict between two regulations for a record."""
     id: str
     record_id: str
     regulation_a: Regulation

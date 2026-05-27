@@ -1,0 +1,54 @@
+{
+  "description": "Documents the conflict-rule families that SHACL cannot express natively, and the SHACL feature gap responsible. The SHACL baseline (shacl_baseline.py) covers the static-constraint subset only.",
+  "spec_version": "W3C SHACL 1.0 Recommendation (2017-07-20)",
+  "expressible_in_shacl": [
+    {
+      "rule": "Static type/jurisdiction conjunction",
+      "examples": ["Record with type=FINANCIAL and PII flag and EU jurisdiction"],
+      "shacl_construct": "sh:NodeShape with sh:property + sh:hasValue/sh:in",
+      "covered_in_baseline": true
+    },
+    {
+      "rule": "Mutual exclusion of governance states",
+      "examples": ["DELETED state with non-empty hold_matters"],
+      "shacl_construct": "sh:not nested inside sh:property",
+      "covered_in_baseline": true
+    }
+  ],
+  "not_expressible_in_shacl": [
+    {
+      "rule": "Temporal interval intersection (Allen-style)",
+      "examples": [
+        "Matter hold_start..hold_end vs. record validity window",
+        "Retention deadline expiry vs. erasure-request timestamp"
+      ],
+      "missing_feature": "SHACL has no built-in interval algebra or temporal-relation operators. xsd:dateTime ordering is available only via sh:lessThan / sh:lessThanOrEquals on pairs of properties on the same focus node; multi-node interval relations require SPARQL-based constraints (sh:sparql), which lift the baseline out of 'pure' SHACL and into a SPARQL extension.",
+      "spec_reference": "SHACL Core 4.6 Property Pair Constraint Components; SHACL-SPARQL 5"
+    },
+    {
+      "rule": "Defeasible priority resolution",
+      "examples": [
+        "SOX vs. SEC: lex-superior, lex-specialis, lex-posterior",
+        "Hold vs. erasure: hold prevails as a defeasible default"
+      ],
+      "missing_feature": "SHACL evaluates each shape independently; it has no representation of priority among conflicting constraints, no exceptions, and no non-monotonic semantics.",
+      "spec_reference": "SHACL Core 1 ('SHACL does not provide a built-in mechanism to handle inconsistencies')"
+    },
+    {
+      "rule": "Cross-record propagation closure",
+      "examples": [
+        "Hold propagation along typed relationships",
+        "Jurisdiction transitive closure"
+      ],
+      "missing_feature": "SHACL constraints are evaluated per focus node; there is no fixed-point closure operator. Recursion across shapes is explicitly out of scope for SHACL Core and only partially supported via SHACL-SPARQL with implementation-specific semantics.",
+      "spec_reference": "SHACL Core 3.4.2 (Recursion Note); SHACL-SPARQL 5.4"
+    },
+    {
+      "rule": "GDPR Article 17(3) exemption suppression (T9)",
+      "examples": ["Hold-Deletion conflict suppressed by matter.legal_obligation_flag"],
+      "missing_feature": "Could be partially expressed via sh:NodeShape on Matter checking the flags, but the cross-record dependency (record's hold_matters -> matter's exemption flags -> suppression of a conflict on the record) requires either SHACL-SPARQL or post-validation reasoning. Out of scope for pure SHACL Core.",
+      "spec_reference": "SHACL Core 4 (Constraint scope)"
+    }
+  ],
+  "summary": "SHACL Core covers the static-constraint surface (per-node type and value constraints). The temporal, defeasible, recursive, and cross-record dimensions that drive T-RKG's incremental value over baselines are out of scope for SHACL Core by construction. A SHACL-SPARQL extension could close part of the gap but is no longer a 'pure' SHACL baseline."
+}

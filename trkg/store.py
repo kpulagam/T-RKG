@@ -1,9 +1,4 @@
-"""
-T-RKG Store: Graph Storage and Query Engine
-
-Implements the temporal records knowledge graph using NetworkX
-with support for bitemporal queries and governance operations.
-"""
+"""NetworkX-backed store for T-RKG with bitemporal queries and hold propagation."""
 
 import networkx as nx
 from datetime import datetime
@@ -18,12 +13,7 @@ from trkg.schema import (
 
 
 class TRKGStore:
-    """
-    Temporal Records Knowledge Graph Store.
-
-    Provides storage, querying, and governance operations over
-    a temporal graph of enterprise records.
-    """
+    """Temporal records knowledge graph: storage, queries, governance."""
 
     def __init__(self):
         self.graph = nx.DiGraph()
@@ -177,7 +167,6 @@ class TRKGStore:
     ) -> Dict[str, List[Tuple[str, RelationType]]]:
         """Propagate hold and return paths for each reached record."""
         as_of = as_of or datetime.now()
-        # Maps record_id -> path of (record_id, relation_type) from seed
         paths: Dict[str, List[Tuple[str, RelationType]]] = {}
         for sid in seed_record_ids:
             if sid in self.records:

@@ -1,25 +1,65 @@
-"""
-Statistical utilities for T-RKG experiments.
-
-Provides multi-seed execution, mean/std reporting, and formatting.
-"""
+"""Multi-seed timing and mean/std formatting helpers, plus a paired
+permutation test used for paired across-system comparisons in §VII."""
 
 import time
 import statistics
-from typing import List, Dict, Any, Callable, Optional
+from typing import List, Dict, Any, Callable, Optional, Sequence, Tuple
 from dataclasses import dataclass, field
+
+
+def paired_permutation_test(
+    a: Sequence[float],
+    b: Sequence[float],
+    n_resamples: int = 10000,
+    seed: int = 0,
+) -> Tuple[float, float]:
+    """Two-sided paired permutation test on per-pair differences a[i] - b[i].
+
+    Returns (observed_mean_difference, two-sided_p). With n paired samples
+    there are 2^n possible sign assignments; for n in (10..14) we enumerate
+    exactly, otherwise sample n_resamples sign-flips. The p is the share of
+    resampled mean-differences whose absolute value meets or exceeds the
+    observed absolute mean difference.
+    """
+    import math
+    import random as _r
+    if len(a) != len(b):
+        raise ValueError("a and b must be the same length")
+    diffs = [ai - bi for ai, bi in zip(a, b)]
+    n = len(diffs)
+    if n == 0:
+        return 0.0, 1.0
+    observed = sum(diffs) / n
+    rng = _r.Random(seed)
+    if n <= 14:
+        total = 0
+        hits = 0
+        for mask in range(1 << n):
+            s = 0.0
+            for i in range(n):
+                s += diffs[i] if (mask >> i) & 1 else -diffs[i]
+            if abs(s / n) >= abs(observed):
+                hits += 1
+            total += 1
+        return observed, hits / total
+    hits = 0
+    for _ in range(n_resamples):
+        s = 0.0
+        for d in diffs:
+            s += d if rng.random() < 0.5 else -d
+        if abs(s / n) >= abs(observed):
+            hits += 1
+    return observed, hits / n_resamples
 
 
 @dataclass
 class TimedResult:
-    """Result of a single timed execution."""
     elapsed_ms: float
     value: Any = None
 
 
 @dataclass
 class MultiRunResult:
-    """Aggregated result across multiple random seeds."""
     values: List[Any] = field(default_factory=list)
     times_ms: List[float] = field(default_factory=list)
 
@@ -48,7 +88,6 @@ class MultiRunResult:
 
 
 def time_execution(func: Callable, *args, **kwargs) -> TimedResult:
-    """Time a function call and return result + elapsed time in ms."""
     start = time.perf_counter()
     result = func(*args, **kwargs)
     elapsed = (time.perf_counter() - start) * 1000
@@ -56,12 +95,10 @@ def time_execution(func: Callable, *args, **kwargs) -> TimedResult:
 
 
 def mean_std(values: List[float]) -> str:
-    """Format mean ± std for a list of floats."""
     if not values:
         return "N/A"
     m = statistics.mean(values)
     s = statistics.stdev(values) if len(values) > 1 else 0.0
-    # Auto-format based on magnitude
     if m >= 100:
         return f"{m:.0f} ± {s:.0f}"
     elif m >= 1:
@@ -71,7 +108,6 @@ def mean_std(values: List[float]) -> str:
 
 
 def mean_std_int(values: List[int]) -> str:
-    """Format mean ± std for integer values."""
     if not values:
         return "N/A"
     m = statistics.mean(values)
@@ -79,29 +115,25 @@ def mean_std_int(values: List[int]) -> str:
     return f"{m:.0f} ± {s:.0f}"
 
 
-SEEDS = [42, 123, 456, 789, 1024]
+SEEDS = [42, 123, 456, 789, 1024, 2026, 31415, 65537, 1729, 2718]
 
 
 def print_table(headers: List[str], rows: List[List[str]], title: str = ""):
-    """Print a formatted ASCII table."""
     if title:
         print(f"\n{title}")
         print("=" * len(title))
 
-    # Calculate column widths
     widths = [len(h) for h in headers]
     for row in rows:
         for i, cell in enumerate(row):
             if i < len(widths):
                 widths[i] = max(widths[i], len(str(cell)))
 
-    # Header
     header_line = " | ".join(h.ljust(widths[i]) for i, h in enumerate(headers))
     separator = "-+-".join("-" * widths[i] for i in range(len(headers)))
     print(f"  {header_line}")
     print(f"  {separator}")
 
-    # Rows
     for row in rows:
         cells = []
         for i, cell in enumerate(row):

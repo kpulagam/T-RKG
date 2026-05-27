@@ -1,11 +1,5 @@
-"""
-Flat List Baseline: No graph, no indices.
-
-Represents the simplest possible approach — records and relationships
-stored as plain Python lists. Every query is a full linear scan.
-Every propagation hop scans the entire relationship list.
-
-This is a REAL baseline, not simulated. Timings are actual wall-clock.
+"""Flat list baseline: records and relationships in Python lists.
+Every query is a linear scan; every propagation hop rescans relationships.
 """
 
 import time
@@ -18,12 +12,7 @@ from trkg.schema import (
 
 
 class FlatListStore:
-    """
-    Baseline store using flat Python lists.
-
-    No indices, no graph structure. All operations are linear scans.
-    This represents a naive approach without any knowledge representation.
-    """
+    """Baseline store backed by flat Python lists; no indices or graph."""
 
     def __init__(self):
         self.records: List[Record] = []
@@ -39,7 +28,6 @@ class FlatListStore:
         self,
         predicate: Callable[[Record], bool]
     ) -> List[Record]:
-        """Linear scan over all records."""
         return [r for r in self.records if predicate(r)]
 
     def query_at_time(
@@ -47,7 +35,6 @@ class FlatListStore:
         query_time: datetime,
         predicate: Optional[Callable[[Record], bool]] = None
     ) -> List[Record]:
-        """Linear scan with temporal filter."""
         results = []
         for r in self.records:
             if r.created > query_time:
@@ -63,12 +50,7 @@ class FlatListStore:
         max_depth: int = -1,
         as_of: Optional[datetime] = None
     ) -> Set[str]:
-        """
-        BFS hold propagation over flat relationship list.
-
-        Each hop requires a FULL SCAN of the relationship list
-        to find connected records — no graph adjacency structure.
-        """
+        """BFS hold propagation; each hop scans the full relationship list."""
         as_of = as_of or datetime.now()
         visited: Set[str] = set()
         frontier: Set[str] = set(seed_record_ids)
@@ -82,7 +64,6 @@ class FlatListStore:
                     continue
                 visited.add(record_id)
 
-                # FULL SCAN of all relationships each time
                 for rel in self.relationships:
                     if rel.relation_type not in relation_types:
                         continue
@@ -102,7 +83,6 @@ class FlatListStore:
 
     @staticmethod
     def from_trkg_store(store) -> 'FlatListStore':
-        """Convert a TRKGStore to a FlatListStore for fair comparison."""
         flat = FlatListStore()
         for record in store.records.values():
             flat.add_record(record)
