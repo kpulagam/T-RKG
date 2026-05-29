@@ -75,7 +75,14 @@ class RegulationProfile:
 
         # Check jurisdiction (with hierarchy — EU_DE record is subject to EU regulations)
         if self.applicable_jurisdictions:
-            record_ancestors = get_ancestor_jurisdictions(record.jurisdiction)
+            record_ancestors = set(get_ancestor_jurisdictions(record.jurisdiction))
+            # Multi-jurisdiction records (additional_jurisdictions non-empty) are
+            # subject to the union of all their jurisdictions' regulations. The
+            # default is an empty list, so this loop is a no-op for every record
+            # produced by the default generator and leaves applicability
+            # bit-identical to the single-jurisdiction behaviour.
+            for extra in getattr(record, "additional_jurisdictions", None) or []:
+                record_ancestors.update(get_ancestor_jurisdictions(extra))
             if not any(j in self.applicable_jurisdictions for j in record_ancestors):
                 return False
 

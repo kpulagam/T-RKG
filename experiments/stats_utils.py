@@ -52,6 +52,30 @@ def paired_permutation_test(
     return observed, hits / n_resamples
 
 
+def cohens_d_paired(a: Sequence[float], b: Sequence[float]) -> float:
+    """Cohen's d for paired samples: mean(a-b) / stdev(a-b).
+
+    Returns 0.0 when the paired differences have no spread (e.g. a constant
+    gap) but a non-zero mean is conventionally reported as a very large effect;
+    callers should read it together with the permutation-test p-value. A NaN
+    guard returns float('inf') when every difference is identical and non-zero.
+    """
+    if len(a) != len(b):
+        raise ValueError("a and b must be the same length")
+    diffs = [ai - bi for ai, bi in zip(a, b)]
+    n = len(diffs)
+    if n == 0:
+        return 0.0
+    mean = sum(diffs) / n
+    if n < 2:
+        return 0.0
+    var = sum((d - mean) ** 2 for d in diffs) / (n - 1)
+    sd = var ** 0.5
+    if sd == 0:
+        return 0.0 if mean == 0 else float("inf")
+    return mean / sd
+
+
 @dataclass
 class TimedResult:
     elapsed_ms: float

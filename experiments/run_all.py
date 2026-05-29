@@ -242,7 +242,7 @@ def experiment_2_hold_propagation():
             matter = list(store.matters.values())[0]
             cust_records = []
             for cid in matter.custodian_ids:
-                for rid in store._records_by_custodian.get(cid, set()):
+                for rid in sorted(store._records_by_custodian.get(cid, set())):
                     cust_records.append(rid)
             seed_ids = cust_records[:num_seeds]
             if len(seed_ids) < num_seeds:
@@ -294,7 +294,7 @@ def experiment_2_hold_propagation():
         matter = list(store.matters.values())[0]
         cust_records = []
         for cid in matter.custodian_ids:
-            for rid in store._records_by_custodian.get(cid, set()):
+            for rid in sorted(store._records_by_custodian.get(cid, set())):
                 cust_records.append(rid)
         seed_ids = cust_records[:num_seeds]
         if len(seed_ids) < num_seeds:
@@ -563,7 +563,7 @@ def experiment_4_scenarios():
         # Scenario A: Cross-System Legal Hold
         seed_ids = []
         for cid in matter.custodian_ids:
-            for rid in store._records_by_custodian.get(cid, set()):
+            for rid in sorted(store._records_by_custodian.get(cid, set())):
                 r = store.records[rid]
                 if datetime(2023, 1, 1) <= r.created <= datetime(2024, 12, 31):
                     seed_ids.append(rid)
@@ -588,7 +588,7 @@ def experiment_4_scenarios():
             target = eu_cust[0]
             cust_records = [
                 store.records[rid]
-                for rid in store._records_by_custodian.get(target.id, set())
+                for rid in sorted(store._records_by_custodian.get(target.id, set()))
             ]
             pii = [r for r in cust_records if r.contains_pii]
 
@@ -696,7 +696,7 @@ def _matter_scoped_seeds(store, num_seeds: int = 50) -> list:
     matter = list(store.matters.values())[0]
     seeds = []
     for cid in matter.custodian_ids:
-        for rid in store._records_by_custodian.get(cid, set()):
+        for rid in sorted(store._records_by_custodian.get(cid, set())):
             seeds.append(rid)
     seeds = seeds[:num_seeds]
     if len(seeds) < num_seeds:

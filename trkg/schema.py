@@ -129,6 +129,13 @@ class Record:
 
     # Jurisdiction
     jurisdiction: Jurisdiction = Jurisdiction.US
+    # Optional multi-jurisdiction representation. Empty by default, so a
+    # record is governed solely by `jurisdiction`. When non-empty, the record
+    # is additionally subject to each listed jurisdiction's regulations (union
+    # of ancestor sets). Introduced for the balanced dataset (E3) to realize
+    # the multi-jurisdiction extension anticipated in the paper's §VIII-E
+    # limitations; the default generator never populates it.
+    additional_jurisdictions: List[Jurisdiction] = field(default_factory=list)
 
     # Metadata (flexible key-value)
     metadata: Dict[str, Any] = field(default_factory=dict)

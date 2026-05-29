@@ -40,6 +40,21 @@ class GeneratorConfig:
     noise_pii_flip: float = 0.0
     noise_metadata_flip: float = 0.0
 
+    # Optional multi-jurisdiction overlay (E3 balanced preset). When > 0, a
+    # record is, with this probability, made subject to a second privacy
+    # regime via Record.additional_jurisdictions (and forced PII so the
+    # privacy regulations apply), producing JURISDICTION-family conflicts.
+    # DEFAULT 0.0: the standard generator emits zero multi-jurisdiction
+    # records and consumes no RNG for this step, so existing datasets are
+    # byte-identical. See trkg/composition.py and the §VIII-E limitation.
+    multi_jurisdiction_probability: float = 0.0
+
+    # Per-matter GDPR Art. 17(3) exemption-flag rates. Defaults equal the
+    # historical hard-coded 0.05, so default datasets are unchanged; the
+    # balanced preset raises them so the Axiom-4 suppression is well populated.
+    matter_legal_obligation_prob: float = 0.05
+    matter_legal_claim_prob: float = 0.05
+
     def __post_init__(self):
         if self.jurisdiction_weights is None:
             self.jurisdiction_weights = {
@@ -93,6 +108,7 @@ class SyntheticDataGenerator:
         self._generate_systems()
         self._generate_custodians()
         self._generate_records()
+        self._apply_multi_jurisdiction()
         # Snapshot clean labels as ground truth before noise injection.
         self._snapshot_clean_labels()
         self._inject_label_noise()
@@ -110,6 +126,31 @@ class SyntheticDataGenerator:
                 "contains_phi":      rec.contains_phi,
                 "is_public_company": bool(rec.metadata.get("is_public_company", False)),
             }
+
+    def _apply_multi_jurisdiction(self):
+        """Overlay a second privacy regime on a fraction of records (E3).
+
+        Inert by default: with multi_jurisdiction_probability == 0 this returns
+        immediately and consumes no RNG, so the standard generator emits zero
+        records with a non-empty additional_jurisdictions and existing datasets
+        are byte-identical. When enabled, a selected record is made an EU PII
+        record additionally subject to California (CPRA) and/or Canada (PIPEDA),
+        which is exactly the dual-privacy-regime condition that fires the
+        JURISDICTION conflict family (GDPR-CPRA / GDPR-PIPEDA)."""
+        prob = self.config.multi_jurisdiction_probability
+        if prob <= 0:
+            return
+        # Combos chosen so both GDPR-CPRA and GDPR-PIPEDA are represented.
+        combos = [
+            [Jurisdiction.US_CA],               # EU + California  -> GDPR + CPRA
+            [Jurisdiction.CA],                  # EU + Canada      -> GDPR + PIPEDA
+            [Jurisdiction.US_CA, Jurisdiction.CA],  # all three privacy regimes
+        ]
+        for rec in self.store.records.values():
+            if random.random() < prob:
+                rec.jurisdiction = Jurisdiction.EU
+                rec.additional_jurisdictions = list(random.choice(combos))
+                rec.contains_pii = True
 
     def _inject_label_noise(self):
         """Flip jurisdiction, PII, and is_public_company labels per configured rates."""
@@ -432,8 +473,8 @@ class SyntheticDataGenerator:
             # GDPR Art. 17(3) flags sampled independently of any conflict-
             # causing structure; conditioning them on conflict outcome would
             # leak information into the evaluation. Independent Bernoulli(0.05).
-            legal_obl = random.random() < 0.05
-            legal_clm = random.random() < 0.05
+            legal_obl = random.random() < self.config.matter_legal_obligation_prob
+            legal_clm = random.random() < self.config.matter_legal_claim_prob
             matter = Matter(
                 id=f"matter_{i:03d}", name=name, matter_type=mtype,
                 custodian_ids=cust_ids, keywords=scope,
@@ -482,6 +523,45 @@ def generate_test_dataset(num_records: int = 10000, seed: int = 42) -> TRKGStore
         num_custodians=max(20, int(100 * scale)), num_matters=5
     )
     return SyntheticDataGenerator(config, seed).generate()
+
+
+def balanced_config(num_records: int = 10000) -> GeneratorConfig:
+    """E3 balanced preset: a named config that exercises all four conflict
+    families, including the multi-jurisdiction (JURISDICTION) family and the
+    GDPR Art. 17(3) defeasibility (Axiom 4) suppression.
+
+    This is *additive*: it returns a new GeneratorConfig instance and never
+    mutates the default. It is the realization of the multi-jurisdiction
+    extension anticipated in the paper's §VIII-E limitations section — the
+    default generator still emits zero records with a non-empty
+    additional_jurisdictions (multi_jurisdiction_probability stays 0.0 there).
+
+    Relative to the default it (a) turns on the multi-jurisdiction overlay so
+    EU PII records also fall under California (CPRA) and/or Canada (PIPEDA);
+    (b) raises the per-matter Art. 17(3) exemption-flag rates so the Axiom-4
+    suppression is well populated rather than near-empty; (c) rebalances the
+    jurisdiction mix and raises PII so the retention/hold families are dense.
+    """
+    scale = num_records / 10000
+    return GeneratorConfig(
+        num_emails=int(4000 * scale), num_documents=int(3000 * scale),
+        num_chats=int(1500 * scale), num_tickets=int(500 * scale),
+        num_contracts=int(500 * scale), num_financial=int(500 * scale),
+        num_custodians=max(20, int(100 * scale)), num_matters=5,
+        pii_probability=0.30,
+        phi_probability=0.08,
+        multi_jurisdiction_probability=0.15,
+        matter_legal_obligation_prob=0.40,
+        matter_legal_claim_prob=0.40,
+        jurisdiction_weights={
+            Jurisdiction.US: 0.35,
+            Jurisdiction.US_CA: 0.15,
+            Jurisdiction.EU: 0.25,
+            Jurisdiction.EU_DE: 0.08,
+            Jurisdiction.UK: 0.07,
+            Jurisdiction.CA: 0.10,
+        },
+    )
 
 
 def generate_minimal_dataset(seed: int = 42) -> TRKGStore:
