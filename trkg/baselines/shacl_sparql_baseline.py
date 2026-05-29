@@ -4,7 +4,9 @@ The SHACL Core baseline (shacl_baseline.py) can only express per-node static
 attribute conjunctions. SHACL-SPARQL (sh:sparql constraint components, W3C SHACL
 §5) lifts that ceiling: a SPARQL SELECT can join across nodes and use
 FILTER NOT EXISTS, so three conflict families that Core cannot reach become
-expressible:
+expressible. Note: each shape hand-encodes ONE regulation pair, so this is a
+qualitative gain over SHACL Core, not full parity with T-RKG (see E6 results —
+JURISDICTION reaches full recall, RETENTION/HOLD only partial):
 
   * RETENTION_DELETION — a deletion-bearing record (PII in an EU jurisdiction)
     that is also a SOX-retained public-company financial record.

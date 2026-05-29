@@ -1,0 +1,6 @@
+{
+  "model": "claude-opus-4-7",
+  "prompt_sha": "c2d34c297b365ee8da7c3e18c12f6f7b36f1711b0b72b895fb408f5cd6050260",
+  "response_text": "[\u201cIRS\u201d]\n\nWait, let me recheck. Jurisdiction is EU, additional includes US_CA, CA. IRS requires US/US_CA/US_NY - US_CA is in additional. Record type TAX qualifies.\n\n[\"IRS\"]",
+  "created_utc": "2026-05-29T06:52:00.758059+00:00"
+}

@@ -1,14 +1,21 @@
 #!/usr/bin/env python3
-"""E6 — SHACL-SPARQL baseline: expressivity parity at prohibitive cost.
+"""E6 — SHACL-SPARQL baseline: qualitative expressivity gain at prohibitive cost.
 
 SHACL Core can only express per-node static attribute conjunctions. SHACL-SPARQL
 (sh:sparql) can join across nodes and use FILTER NOT EXISTS, so it reaches three
 families Core cannot: RETENTION_DELETION, HOLD_DELETION (with the GDPR Art. 17(3)
-defeasible exemption), and JURISDICTION. E6's finding is NOT that SHACL-SPARQL
-fails to express these — it succeeds (expressivity parity on those three). The
-finding is the *cost*: SHACL-SPARQL runs at roughly 10^4-10^5x the latency of
-T-RKG's native detector, which makes it infeasible at enterprise scale. That
-latency gap is the result.
+defeasible exemption), and JURISDICTION. The finding is two-sided, reported as
+measured (NOT the going-in "parity at 10^4-10^5x" framing):
+
+  * Expressivity is a *qualitative* gain over SHACL Core, NOT full parity with
+    T-RKG. SHACL-SPARQL reaches full recall only on JURISDICTION (1.000, a single
+    uniform join); RETENTION_DELETION (~0.50) and HOLD_DELETION (~0.40) are only
+    partially recovered because each sh:sparql shape hand-encodes ONE regulation
+    pair, while T-RKG composes the full cross-product. PRIORITY and
+    hold-propagation closure stay inexpressible (recall 0).
+  * The latency gap is ~3x10^3 (measured 2,800-3,300x), not 10^4-10^5 — still
+    tens of minutes at 100K, so infeasibility stands. The cost, combined with the
+    per-regulation-pair authoring burden, is the result.
 
 Apples-to-apples discipline: for each (scale, seed) a single hold context is
 built (round-robin holds over the EU+PII population, exactly as E3) and applied
@@ -129,7 +136,7 @@ def run(seeds=SEEDS, scales=MEASURED_SCALES):
 
     return {
         "experiment": "E6",
-        "title": "SHACL-SPARQL baseline: expressivity parity at prohibitive latency",
+        "title": "SHACL-SPARQL baseline: qualitative expressivity gain at prohibitive latency",
         "preset": "balanced_config",
         "measured_scales": list(scales),
         "projected_scales": PROJECTED_SCALES,
@@ -179,7 +186,7 @@ def _project_infeasible(per_scale, scales):
 
 def _print_summary(out):
     print("\n" + "=" * 74)
-    print("E6: SHACL-SPARQL baseline — expressivity parity at prohibitive latency")
+    print("E6: SHACL-SPARQL baseline — qualitative expressivity gain at prohibitive latency")
     print("=" * 74)
     print(f"  Preset={out['preset']}, {out['n_seeds']} seeds, "
           f"engine pyshacl {out['engine'].get('pyshacl')} / rdflib {out['engine'].get('rdflib')}\n")

@@ -30,6 +30,13 @@ def paired_permutation_test(
     if n == 0:
         return 0.0, 1.0
     observed = sum(diffs) / n
+    # Boundary tolerance: the per-mask statistic is accumulated in a different
+    # float order than `observed`, so the identity/all-flip permutations (which
+    # MUST count) can fall ~1e-16 below |observed| and be wrongly excluded,
+    # yielding an impossible p=0. A two-sided permutation p can never be 0; its
+    # floor is 2/2**n. Comparing against |observed| - tol restores that floor.
+    tol = 1e-9 * max(1.0, abs(observed))
+    threshold = abs(observed) - tol
     rng = _r.Random(seed)
     if n <= 14:
         total = 0
@@ -38,7 +45,7 @@ def paired_permutation_test(
             s = 0.0
             for i in range(n):
                 s += diffs[i] if (mask >> i) & 1 else -diffs[i]
-            if abs(s / n) >= abs(observed):
+            if abs(s / n) >= threshold:
                 hits += 1
             total += 1
         return observed, hits / total
@@ -47,7 +54,7 @@ def paired_permutation_test(
         s = 0.0
         for d in diffs:
             s += d if rng.random() < 0.5 else -d
-        if abs(s / n) >= abs(observed):
+        if abs(s / n) >= threshold:
             hits += 1
     return observed, hits / n_resamples
 

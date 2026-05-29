@@ -4,7 +4,7 @@ This document tracks the six experiments (E1–E6) strengthening the T-RKG paper
 Each completed experiment writes an isolated `experiments/results/<id>.json` and a
 paper-ready `experiments/results/<id>_RESULTS.md`.
 
-## STATUS (as of 2026-05-28)
+## STATUS (as of 2026-05-29)
 
 ### Finished — code, tests, data, and RESULTS.md all complete
 
@@ -25,40 +25,48 @@ paper-ready `experiments/results/<id>_RESULTS.md`.
   decomposed 347±55 total conflicts; cross-domain 98±27 → **0 on every seed**;
   applicability F1 1.000 → 0.702. All paired tests p=0.00195.
 
-### Partially run — code & tests complete, full data run NOT finished
+- **E1 — LLM applicability baseline, composed vs siloed.**
+  `trkg/baselines/llm_baseline.py`, `experiments/e1_llm_baseline.py`,
+  `tests/test_e1.py` (13 tests, green; mock client, no network). Run with a real
+  key (`claude-opus-4-7`), 10 seeds × 200-record representative sample, two views
+  × two regimes. Headline = **composed − siloed F1 gap**: clean composed micro F1
+  **0.988** (macro 0.940, cross-domain recall 0.997) → siloed **0.266**
+  (cross-domain recall **0.000**), Δ=0.724, p=0.00195, d=24.5. Noised regime
+  composed 0.889 → siloed 0.247. **Validity invariant** ontology-siloed
+  cross-domain recall = 0.000 (partition sound; leak gate
+  `assert_no_cross_system_triggers` passes on every view). `results/e1.json`
+  `status="COMPLETE"`; full run is 232 unique cached API calls (then
+  `api_calls=0`). See `results/e1_RESULTS.md`.
+  - **Two bugs caught before reporting:** (1) the original first-200-by-id sample
+    returned only CHAT records, starving 6 of 9 regs to F1=0 — fixed with a seeded
+    representative sample; (2) `paired_permutation_test` reported an impossible
+    p=0.0 on the clean gap (float-order boundary issue) — fixed with a tolerance
+    so the two-sided floor 2/2ⁿ holds. E3/E5/E6 (already at the 0.00195 floor) are
+    unaffected.
 
 - **E6 — SHACL-SPARQL baseline.**
   `experiments/e6_shacl_sparql.py`, `trkg/baselines/shacl_sparql_baseline.py`,
-  `tests/test_e6.py` (11 tests, green). The baseline expresses the three
-  families SHACL Core cannot (RETENTION_DELETION, HOLD_DELETION with Art. 17(3)
-  defeasibility, JURISDICTION) and declares the two it still cannot (PRIORITY,
-  hold-propagation closure).
-  - **Hold-context bug fixed:** the generator populates zero `hold_matters`;
-    E6 now applies an identical round-robin hold context to the store BEFORE
-    both detectors run, so T-RKG vs SHACL-SPARQL recall is apples-to-apples.
-  - **HOLD_DELETION recall gap is a finding, not a bug:** SHACL recovers
-    exactly the GDPR-exemption subset; it misses CPRA/PIPEDA erasure-under-hold
-    that T-RKG fires, because Art. 17(3) is GDPR-specific and a single
-    wholesale-suppression shape cannot encode it per-regulation.
-  - **Preliminary (2-seed) numbers** from the quick run: T-RKG ~6 ms vs
-    SHACL-SPARQL ~21 s at 1K (ratio ~3300×); JURISDICTION recall 1.00;
-    HOLD_DELETION recall ~0.53; latency scales ~linearly (n^1.0). These are NOT
-    committed as results.
-  - **PENDING:** the full 1K/5K/10K × 10-seed sweep was launched but
-    interrupted (laptop taken). `results/e6.json` currently on disk is the
-    **2-seed quick run** and is intentionally NOT committed. Re-run with
-    `python experiments/e6_shacl_sparql.py` (~55 min) to produce the final
-    10-seed `e6.json`, then write `results/e6_RESULTS.md` framing the result as
-    *expressivity parity at ~10³–10⁴× T-RKG latency → infeasible at enterprise
-    scale*, with 25K/50K/100K reported as projected-infeasible.
+  `tests/test_e6.py` (11 tests, green). Full **10-seed** sweep at 1K/5K/10K done;
+  `results/e6.json` + `results/e6_RESULTS.md` written. Both detectors run under
+  an identical round-robin hold context (apples-to-apples).
+  - **Latency:** SHACL-SPARQL is **~3×10³ slower** (2,800–3,300×), linear
+    `ms ≈ 20.6·n^1.00`: 21.3 s / 106 s / 215 s at 1K/5K/10K vs T-RKG 6.6/33/111 ms.
+    Projected 25K/50K/100K ≈ 9 / 18 / 36 min → infeasible at enterprise scale.
+  - **Expressivity is QUALITATIVE, not full parity (honest divergence from the
+    going-in framing):** recall vs T-RKG is JURISDICTION **1.000**,
+    RETENTION_DELETION **~0.50**, HOLD_DELETION **~0.40**; PRIORITY and
+    hold-propagation closure are inexpressible (0). The partials are structural:
+    each `sh:sparql` shape hand-encodes ONE regulation pair (RETENTION shape =
+    EU-PII × SOX public-company), so it misses CPRA/PIPEDA deletion and
+    non-public retention; T-RKG composes the full cross-product. Closing the gap
+    = combinatorial per-pair shape authoring → the maintainability argument.
+  - **Two reporting corrections vs the original framing:** the latency multiplier
+    is **~3×10³, not 10⁴–10⁵** (measured), and it is **expressivity gain over
+    SHACL Core, not parity** (RETENTION/HOLD only ~0.4–0.5 recall). Reported as
+    measured per the honesty contract.
 
 ### Pending — not started
 
-- **E1 — LLM applicability baseline.** NOT STARTED this session. No module, no
-  scaffold, and `experiments/cache/` is **empty** — there are no cached LLM
-  responses because nothing was run. BLOCKED on `ANTHROPIC_API_KEY`. Plan:
-  build scaffold + tests, cache every response to disk, write `STATUS: BLOCKED`
-  until a key is available. Do not fabricate or estimate any number.
 - **E2 — Enron loader.** NOT STARTED (per instruction). Must scaffold only;
   must NOT silently download ~1.7 GB or install dependencies. BLOCKED on
   data + NER.
@@ -74,13 +82,22 @@ paper-ready `experiments/results/<id>_RESULTS.md`.
   deterministic version is now canonical.
 - **`additional_jurisdictions`** field on `Record` (`trkg/schema.py`) and the
   multi-jurisdiction overlay (`trkg/synthetic.py`), proven inert by default.
-- **Shared siloed/decomposed partition core** (`trkg/composition.py`).
+- **Shared siloed/decomposed partition core** (`trkg/composition.py`), now also
+  used by E1's siloed arm.
+- **Permutation-test floor fix** in `experiments/stats_utils.py`: a float-order
+  boundary issue let `paired_permutation_test` return an impossible p=0.0 on a
+  large clean separation; a tolerance restores the two-sided floor 2/2ⁿ. Found
+  via E1; E3/E5/E6 (already at the floor) are unchanged.
 
 ## Next steps (in order)
 
-1. Re-run the full E6 sweep → final `results/e6.json` + `results/e6_RESULTS.md`.
-2. E1 scaffold + cache + tests (will report BLOCKED without an API key).
-3. E2 Enron loader scaffold (BLOCKED) and E4 labeling kit (PREP ONLY).
+1. ~~Re-run the full E6 sweep~~ DONE — `results/e6.json` (10 seeds) +
+   `results/e6_RESULTS.md` written.
+2. ~~E1 scaffold + cache + tests~~ + ~~full composed-vs-siloed run~~ DONE
+   (COMPLETE; see above).
+3. E2 Enron loader scaffold (BLOCKED) and E4 labeling kit (PREP ONLY). NOT STARTED.
 4. Wave 2: merge `results/*.json` without clobbering existing entries.
 5. Wave 3: data-driven figures, consistency check, `run_all` wiring
    (`--skip-external`), full suite green, finalize this summary.
+6. Commit E1 (scaffold + cache + composed/siloed run), E6 (final 10-seed data +
+   RESULTS), and the stats fix — not yet committed.

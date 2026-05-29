@@ -1,0 +1,6 @@
+{
+  "model": "claude-opus-4-7",
+  "prompt_sha": "cf4ebc58c0627506c6854b37061e8e5047c36fe5c03dda676086818e29809a84",
+  "response_text": "[\"SOX\",\"SEC\",\"FINRA\",\"IRS\"]",
+  "created_utc": "2026-05-29T06:50:20.416579+00:00"
+}
