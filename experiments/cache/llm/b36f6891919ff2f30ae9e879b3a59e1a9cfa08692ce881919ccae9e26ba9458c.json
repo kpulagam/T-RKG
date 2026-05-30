@@ -1,6 +1,0 @@
-{
-  "model": "claude-opus-4-7",
-  "prompt_sha": "b36f6891919ff2f30ae9e879b3a59e1a9cfa08692ce881919ccae9e26ba9458c",
-  "response_text": "[\"GDPR\",\"CPRA\",\"PIPEDA\"]",
-  "created_utc": "2026-05-29T06:51:22.434554+00:00"
-}

@@ -1,6 +1,0 @@
-{
-  "model": "claude-opus-4-7",
-  "prompt_sha": "c9e494dae383f3a82186467371c8e6b5e809cdfe4f232cb69a1e036512bf2600",
-  "response_text": "[\"SOX\",\"SEC\",\"IRS\"]",
-  "created_utc": "2026-05-29T06:50:16.932581+00:00"
-}
