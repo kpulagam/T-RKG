@@ -1,0 +1,1603 @@
+{
+  "rec_0001": {
+    "record_type": "PatientInvoice",
+    "jurisdiction": "CA",
+    "PII": false,
+    "PHI": true,
+    "public_company": false,
+    "mapped_record_type": "INVOICE",
+    "trkg_regulations": []
+  },
+  "rec_0002": {
+    "record_type": "Invoice",
+    "jurisdiction": "EU_DE",
+    "PII": false,
+    "PHI": false,
+    "public_company": true,
+    "mapped_record_type": "INVOICE",
+    "trkg_regulations": [
+      "HGB",
+      "SOX"
+    ]
+  },
+  "rec_0003": {
+    "record_type": "Email",
+    "jurisdiction": "CA",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "EMAIL",
+    "trkg_regulations": [
+      "PIPEDA"
+    ]
+  },
+  "rec_0004": {
+    "record_type": "PatientInvoice",
+    "jurisdiction": "US_CA",
+    "PII": false,
+    "PHI": false,
+    "public_company": true,
+    "mapped_record_type": "INVOICE",
+    "trkg_regulations": [
+      "SEC",
+      "SOX"
+    ]
+  },
+  "rec_0005": {
+    "record_type": "Invoice",
+    "jurisdiction": "EU_DE",
+    "PII": false,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "INVOICE",
+    "trkg_regulations": [
+      "HGB"
+    ]
+  },
+  "rec_0006": {
+    "record_type": "AllergyRecord",
+    "jurisdiction": "US",
+    "PII": false,
+    "PHI": true,
+    "public_company": false,
+    "mapped_record_type": "MEDICAL",
+    "trkg_regulations": [
+      "HIPAA"
+    ]
+  },
+  "rec_0007": {
+    "record_type": "PatientInvoice",
+    "jurisdiction": "US_CA",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "INVOICE",
+    "trkg_regulations": [
+      "CPRA"
+    ]
+  },
+  "rec_0008": {
+    "record_type": "PatientInvoice",
+    "jurisdiction": "US_CA",
+    "PII": true,
+    "PHI": true,
+    "public_company": false,
+    "mapped_record_type": "INVOICE",
+    "trkg_regulations": [
+      "CPRA",
+      "HIPAA"
+    ]
+  },
+  "rec_0009": {
+    "record_type": "Email",
+    "jurisdiction": "EU_FR",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "EMAIL",
+    "trkg_regulations": [
+      "GDPR"
+    ]
+  },
+  "rec_0010": {
+    "record_type": "Invoice",
+    "jurisdiction": "EU_FR",
+    "PII": false,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "INVOICE",
+    "trkg_regulations": []
+  },
+  "rec_0011": {
+    "record_type": "MedicalRecord",
+    "jurisdiction": "EU_DE",
+    "PII": true,
+    "PHI": true,
+    "public_company": false,
+    "mapped_record_type": "MEDICAL",
+    "trkg_regulations": [
+      "GDPR"
+    ]
+  },
+  "rec_0012": {
+    "record_type": "Ticket",
+    "jurisdiction": "US_CA",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "TICKET",
+    "trkg_regulations": [
+      "CPRA"
+    ]
+  },
+  "rec_0013": {
+    "record_type": "AuditWorkpaper",
+    "jurisdiction": "US",
+    "PII": false,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "AUDIT",
+    "trkg_regulations": []
+  },
+  "rec_0014": {
+    "record_type": "AutopsyReport",
+    "jurisdiction": "EU_DE",
+    "PII": false,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "MEDICAL",
+    "trkg_regulations": []
+  },
+  "rec_0015": {
+    "record_type": "TaxRecord",
+    "jurisdiction": "US_CA",
+    "PII": true,
+    "PHI": false,
+    "public_company": true,
+    "mapped_record_type": "TAX",
+    "trkg_regulations": [
+      "CPRA",
+      "FINRA",
+      "IRS",
+      "SEC",
+      "SOX"
+    ]
+  },
+  "rec_0016": {
+    "record_type": "Invoice",
+    "jurisdiction": "CA",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "INVOICE",
+    "trkg_regulations": [
+      "PIPEDA"
+    ]
+  },
+  "rec_0017": {
+    "record_type": "BankStatement",
+    "jurisdiction": "US",
+    "PII": true,
+    "PHI": false,
+    "public_company": true,
+    "mapped_record_type": "FINANCIAL",
+    "trkg_regulations": [
+      "FINRA",
+      "IRS",
+      "SEC",
+      "SOX"
+    ]
+  },
+  "rec_0018": {
+    "record_type": "BenefitsEnrollment",
+    "jurisdiction": "US_CA",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "OTHER",
+    "trkg_regulations": [
+      "CPRA"
+    ]
+  },
+  "rec_0019": {
+    "record_type": "PatientInvoice",
+    "jurisdiction": "EU_FR",
+    "PII": false,
+    "PHI": true,
+    "public_company": true,
+    "mapped_record_type": "INVOICE",
+    "trkg_regulations": [
+      "SOX"
+    ]
+  },
+  "rec_0020": {
+    "record_type": "AuditWorkpaper",
+    "jurisdiction": "CA",
+    "PII": false,
+    "PHI": false,
+    "public_company": true,
+    "mapped_record_type": "AUDIT",
+    "trkg_regulations": [
+      "SOX"
+    ]
+  },
+  "rec_0021": {
+    "record_type": "AllergyRecord",
+    "jurisdiction": "US",
+    "PII": true,
+    "PHI": true,
+    "public_company": false,
+    "mapped_record_type": "MEDICAL",
+    "trkg_regulations": [
+      "HIPAA"
+    ]
+  },
+  "rec_0022": {
+    "record_type": "Invoice",
+    "jurisdiction": "EU_DE",
+    "PII": true,
+    "PHI": false,
+    "public_company": true,
+    "mapped_record_type": "INVOICE",
+    "trkg_regulations": [
+      "GDPR",
+      "HGB",
+      "SOX"
+    ]
+  },
+  "rec_0023": {
+    "record_type": "AutopsyReport",
+    "jurisdiction": "US_CA",
+    "PII": false,
+    "PHI": true,
+    "public_company": false,
+    "mapped_record_type": "MEDICAL",
+    "trkg_regulations": [
+      "HIPAA"
+    ]
+  },
+  "rec_0024": {
+    "record_type": "AllergyRecord",
+    "jurisdiction": "CA",
+    "PII": false,
+    "PHI": true,
+    "public_company": false,
+    "mapped_record_type": "MEDICAL",
+    "trkg_regulations": []
+  },
+  "rec_0025": {
+    "record_type": "TaxRecord",
+    "jurisdiction": "EU_DE",
+    "PII": false,
+    "PHI": false,
+    "public_company": true,
+    "mapped_record_type": "TAX",
+    "trkg_regulations": [
+      "HGB",
+      "SOX"
+    ]
+  },
+  "rec_0026": {
+    "record_type": "AllergyRecord",
+    "jurisdiction": "US_CA",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "MEDICAL",
+    "trkg_regulations": [
+      "CPRA"
+    ]
+  },
+  "rec_0027": {
+    "record_type": "PatientInvoice",
+    "jurisdiction": "US_CA",
+    "PII": false,
+    "PHI": true,
+    "public_company": true,
+    "mapped_record_type": "INVOICE",
+    "trkg_regulations": [
+      "HIPAA",
+      "SEC",
+      "SOX"
+    ]
+  },
+  "rec_0028": {
+    "record_type": "BankStatement",
+    "jurisdiction": "EU_FR",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "FINANCIAL",
+    "trkg_regulations": [
+      "GDPR"
+    ]
+  },
+  "rec_0029": {
+    "record_type": "PatientInvoice",
+    "jurisdiction": "US",
+    "PII": false,
+    "PHI": true,
+    "public_company": true,
+    "mapped_record_type": "INVOICE",
+    "trkg_regulations": [
+      "HIPAA",
+      "SEC",
+      "SOX"
+    ]
+  },
+  "rec_0030": {
+    "record_type": "PatientInvoice",
+    "jurisdiction": "US_CA",
+    "PII": true,
+    "PHI": false,
+    "public_company": true,
+    "mapped_record_type": "INVOICE",
+    "trkg_regulations": [
+      "CPRA",
+      "SEC",
+      "SOX"
+    ]
+  },
+  "rec_0031": {
+    "record_type": "PatientInvoice",
+    "jurisdiction": "EU_DE",
+    "PII": true,
+    "PHI": false,
+    "public_company": true,
+    "mapped_record_type": "INVOICE",
+    "trkg_regulations": [
+      "GDPR",
+      "HGB",
+      "SOX"
+    ]
+  },
+  "rec_0032": {
+    "record_type": "BenefitsEnrollment",
+    "jurisdiction": "US",
+    "PII": false,
+    "PHI": true,
+    "public_company": false,
+    "mapped_record_type": "OTHER",
+    "trkg_regulations": [
+      "HIPAA"
+    ]
+  },
+  "rec_0033": {
+    "record_type": "BenefitsEnrollment",
+    "jurisdiction": "US_CA",
+    "PII": true,
+    "PHI": true,
+    "public_company": false,
+    "mapped_record_type": "OTHER",
+    "trkg_regulations": [
+      "CPRA",
+      "HIPAA"
+    ]
+  },
+  "rec_0034": {
+    "record_type": "TaxRecord",
+    "jurisdiction": "EU_DE",
+    "PII": false,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "TAX",
+    "trkg_regulations": [
+      "HGB"
+    ]
+  },
+  "rec_0035": {
+    "record_type": "BankStatement",
+    "jurisdiction": "US_CA",
+    "PII": false,
+    "PHI": false,
+    "public_company": true,
+    "mapped_record_type": "FINANCIAL",
+    "trkg_regulations": [
+      "FINRA",
+      "IRS",
+      "SEC",
+      "SOX"
+    ]
+  },
+  "rec_0036": {
+    "record_type": "TaxRecord",
+    "jurisdiction": "EU_DE",
+    "PII": true,
+    "PHI": false,
+    "public_company": true,
+    "mapped_record_type": "TAX",
+    "trkg_regulations": [
+      "GDPR",
+      "HGB",
+      "SOX"
+    ]
+  },
+  "rec_0037": {
+    "record_type": "AdoptionRecord",
+    "jurisdiction": "US_CA",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "OTHER",
+    "trkg_regulations": [
+      "CPRA"
+    ]
+  },
+  "rec_0038": {
+    "record_type": "BankStatement",
+    "jurisdiction": "EU_DE",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "FINANCIAL",
+    "trkg_regulations": [
+      "GDPR",
+      "HGB"
+    ]
+  },
+  "rec_0039": {
+    "record_type": "AutopsyReport",
+    "jurisdiction": "EU_DE",
+    "PII": false,
+    "PHI": true,
+    "public_company": false,
+    "mapped_record_type": "MEDICAL",
+    "trkg_regulations": []
+  },
+  "rec_0040": {
+    "record_type": "BankStatement",
+    "jurisdiction": "US",
+    "PII": false,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "FINANCIAL",
+    "trkg_regulations": [
+      "IRS"
+    ]
+  },
+  "rec_0041": {
+    "record_type": "PatientInvoice",
+    "jurisdiction": "CA",
+    "PII": false,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "INVOICE",
+    "trkg_regulations": []
+  },
+  "rec_0042": {
+    "record_type": "AllergyRecord",
+    "jurisdiction": "EU_FR",
+    "PII": true,
+    "PHI": true,
+    "public_company": false,
+    "mapped_record_type": "MEDICAL",
+    "trkg_regulations": [
+      "GDPR"
+    ]
+  },
+  "rec_0043": {
+    "record_type": "Contract",
+    "jurisdiction": "EU_FR",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "CONTRACT",
+    "trkg_regulations": [
+      "GDPR"
+    ]
+  },
+  "rec_0044": {
+    "record_type": "MedicalRecord",
+    "jurisdiction": "US_CA",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "MEDICAL",
+    "trkg_regulations": [
+      "CPRA"
+    ]
+  },
+  "rec_0045": {
+    "record_type": "BenefitsEnrollment",
+    "jurisdiction": "US",
+    "PII": true,
+    "PHI": true,
+    "public_company": false,
+    "mapped_record_type": "OTHER",
+    "trkg_regulations": [
+      "HIPAA"
+    ]
+  },
+  "rec_0046": {
+    "record_type": "BankStatement",
+    "jurisdiction": "US_CA",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "FINANCIAL",
+    "trkg_regulations": [
+      "CPRA",
+      "IRS"
+    ]
+  },
+  "rec_0047": {
+    "record_type": "PatientInvoice",
+    "jurisdiction": "EU_FR",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "INVOICE",
+    "trkg_regulations": [
+      "GDPR"
+    ]
+  },
+  "rec_0048": {
+    "record_type": "Chat",
+    "jurisdiction": "EU_DE",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "CHAT",
+    "trkg_regulations": [
+      "GDPR"
+    ]
+  },
+  "rec_0049": {
+    "record_type": "BenefitsEnrollment",
+    "jurisdiction": "EU_DE",
+    "PII": true,
+    "PHI": true,
+    "public_company": false,
+    "mapped_record_type": "OTHER",
+    "trkg_regulations": [
+      "GDPR"
+    ]
+  },
+  "rec_0050": {
+    "record_type": "BankStatement",
+    "jurisdiction": "EU_DE",
+    "PII": false,
+    "PHI": false,
+    "public_company": true,
+    "mapped_record_type": "FINANCIAL",
+    "trkg_regulations": [
+      "HGB",
+      "SOX"
+    ]
+  },
+  "rec_0051": {
+    "record_type": "MedicalRecord",
+    "jurisdiction": "US_CA",
+    "PII": false,
+    "PHI": true,
+    "public_company": false,
+    "mapped_record_type": "MEDICAL",
+    "trkg_regulations": [
+      "HIPAA"
+    ]
+  },
+  "rec_0052": {
+    "record_type": "AdoptionRecord",
+    "jurisdiction": "US",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "OTHER",
+    "trkg_regulations": []
+  },
+  "rec_0053": {
+    "record_type": "TaxRecord",
+    "jurisdiction": "EU_FR",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "TAX",
+    "trkg_regulations": [
+      "GDPR"
+    ]
+  },
+  "rec_0054": {
+    "record_type": "PatientInvoice",
+    "jurisdiction": "EU_FR",
+    "PII": false,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "INVOICE",
+    "trkg_regulations": []
+  },
+  "rec_0055": {
+    "record_type": "BillingAddress",
+    "jurisdiction": "US_CA",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "OTHER",
+    "trkg_regulations": [
+      "CPRA"
+    ]
+  },
+  "rec_0056": {
+    "record_type": "PatientInvoice",
+    "jurisdiction": "US",
+    "PII": true,
+    "PHI": true,
+    "public_company": true,
+    "mapped_record_type": "INVOICE",
+    "trkg_regulations": [
+      "HIPAA",
+      "SEC",
+      "SOX"
+    ]
+  },
+  "rec_0057": {
+    "record_type": "BenefitsEnrollment",
+    "jurisdiction": "CA",
+    "PII": true,
+    "PHI": true,
+    "public_company": false,
+    "mapped_record_type": "OTHER",
+    "trkg_regulations": [
+      "PIPEDA"
+    ]
+  },
+  "rec_0058": {
+    "record_type": "MedicalRecord",
+    "jurisdiction": "CA",
+    "PII": false,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "MEDICAL",
+    "trkg_regulations": []
+  },
+  "rec_0059": {
+    "record_type": "TaxRecord",
+    "jurisdiction": "EU_FR",
+    "PII": false,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "TAX",
+    "trkg_regulations": []
+  },
+  "rec_0060": {
+    "record_type": "TaxRecord",
+    "jurisdiction": "US_CA",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "TAX",
+    "trkg_regulations": [
+      "CPRA",
+      "IRS"
+    ]
+  },
+  "rec_0061": {
+    "record_type": "PatientInvoice",
+    "jurisdiction": "EU_DE",
+    "PII": true,
+    "PHI": true,
+    "public_company": true,
+    "mapped_record_type": "INVOICE",
+    "trkg_regulations": [
+      "GDPR",
+      "HGB",
+      "SOX"
+    ]
+  },
+  "rec_0062": {
+    "record_type": "FinancialStatement",
+    "jurisdiction": "US_CA",
+    "PII": false,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "FINANCIAL",
+    "trkg_regulations": [
+      "IRS"
+    ]
+  },
+  "rec_0063": {
+    "record_type": "Invoice",
+    "jurisdiction": "EU_FR",
+    "PII": true,
+    "PHI": false,
+    "public_company": true,
+    "mapped_record_type": "INVOICE",
+    "trkg_regulations": [
+      "GDPR",
+      "SOX"
+    ]
+  },
+  "rec_0064": {
+    "record_type": "PatientInvoice",
+    "jurisdiction": "CA",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "INVOICE",
+    "trkg_regulations": [
+      "PIPEDA"
+    ]
+  },
+  "rec_0065": {
+    "record_type": "PatientInvoice",
+    "jurisdiction": "EU_FR",
+    "PII": true,
+    "PHI": true,
+    "public_company": true,
+    "mapped_record_type": "INVOICE",
+    "trkg_regulations": [
+      "GDPR",
+      "SOX"
+    ]
+  },
+  "rec_0066": {
+    "record_type": "PatientInvoice",
+    "jurisdiction": "EU_DE",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "INVOICE",
+    "trkg_regulations": [
+      "GDPR",
+      "HGB"
+    ]
+  },
+  "rec_0067": {
+    "record_type": "AdoptionRecord",
+    "jurisdiction": "EU_DE",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "OTHER",
+    "trkg_regulations": [
+      "GDPR"
+    ]
+  },
+  "rec_0068": {
+    "record_type": "Ticket",
+    "jurisdiction": "US",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "TICKET",
+    "trkg_regulations": []
+  },
+  "rec_0069": {
+    "record_type": "BankStatement",
+    "jurisdiction": "US_CA",
+    "PII": true,
+    "PHI": false,
+    "public_company": true,
+    "mapped_record_type": "FINANCIAL",
+    "trkg_regulations": [
+      "CPRA",
+      "FINRA",
+      "IRS",
+      "SEC",
+      "SOX"
+    ]
+  },
+  "rec_0070": {
+    "record_type": "FinancialStatement",
+    "jurisdiction": "EU_FR",
+    "PII": false,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "FINANCIAL",
+    "trkg_regulations": []
+  },
+  "rec_0071": {
+    "record_type": "Chat",
+    "jurisdiction": "US",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "CHAT",
+    "trkg_regulations": []
+  },
+  "rec_0072": {
+    "record_type": "AllergyRecord",
+    "jurisdiction": "US",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "MEDICAL",
+    "trkg_regulations": []
+  },
+  "rec_0073": {
+    "record_type": "PatientInvoice",
+    "jurisdiction": "EU_DE",
+    "PII": false,
+    "PHI": true,
+    "public_company": true,
+    "mapped_record_type": "INVOICE",
+    "trkg_regulations": [
+      "HGB",
+      "SOX"
+    ]
+  },
+  "rec_0074": {
+    "record_type": "Chat",
+    "jurisdiction": "EU_FR",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "CHAT",
+    "trkg_regulations": [
+      "GDPR"
+    ]
+  },
+  "rec_0075": {
+    "record_type": "BankStatement",
+    "jurisdiction": "EU_DE",
+    "PII": true,
+    "PHI": false,
+    "public_company": true,
+    "mapped_record_type": "FINANCIAL",
+    "trkg_regulations": [
+      "GDPR",
+      "HGB",
+      "SOX"
+    ]
+  },
+  "rec_0076": {
+    "record_type": "PatientInvoice",
+    "jurisdiction": "EU_FR",
+    "PII": false,
+    "PHI": false,
+    "public_company": true,
+    "mapped_record_type": "INVOICE",
+    "trkg_regulations": [
+      "SOX"
+    ]
+  },
+  "rec_0077": {
+    "record_type": "Contract",
+    "jurisdiction": "EU_DE",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "CONTRACT",
+    "trkg_regulations": [
+      "GDPR",
+      "HGB"
+    ]
+  },
+  "rec_0078": {
+    "record_type": "BankStatement",
+    "jurisdiction": "CA",
+    "PII": true,
+    "PHI": false,
+    "public_company": true,
+    "mapped_record_type": "FINANCIAL",
+    "trkg_regulations": [
+      "PIPEDA",
+      "SOX"
+    ]
+  },
+  "rec_0079": {
+    "record_type": "BillingAddress",
+    "jurisdiction": "EU_DE",
+    "PII": false,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "OTHER",
+    "trkg_regulations": []
+  },
+  "rec_0080": {
+    "record_type": "MedicalRecord",
+    "jurisdiction": "EU_FR",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "MEDICAL",
+    "trkg_regulations": [
+      "GDPR"
+    ]
+  },
+  "rec_0081": {
+    "record_type": "TaxRecord",
+    "jurisdiction": "CA",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "TAX",
+    "trkg_regulations": [
+      "PIPEDA"
+    ]
+  },
+  "rec_0082": {
+    "record_type": "AuditWorkpaper",
+    "jurisdiction": "EU_DE",
+    "PII": false,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "AUDIT",
+    "trkg_regulations": [
+      "HGB"
+    ]
+  },
+  "rec_0083": {
+    "record_type": "AdoptionRecord",
+    "jurisdiction": "EU_FR",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "OTHER",
+    "trkg_regulations": [
+      "GDPR"
+    ]
+  },
+  "rec_0084": {
+    "record_type": "PatientInvoice",
+    "jurisdiction": "CA",
+    "PII": true,
+    "PHI": true,
+    "public_company": true,
+    "mapped_record_type": "INVOICE",
+    "trkg_regulations": [
+      "PIPEDA",
+      "SOX"
+    ]
+  },
+  "rec_0085": {
+    "record_type": "BiometricData",
+    "jurisdiction": "US_CA",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "OTHER",
+    "trkg_regulations": [
+      "CPRA"
+    ]
+  },
+  "rec_0086": {
+    "record_type": "MedicalRecord",
+    "jurisdiction": "CA",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "MEDICAL",
+    "trkg_regulations": [
+      "PIPEDA"
+    ]
+  },
+  "rec_0087": {
+    "record_type": "FinancialStatement",
+    "jurisdiction": "US",
+    "PII": false,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "FINANCIAL",
+    "trkg_regulations": [
+      "IRS"
+    ]
+  },
+  "rec_0088": {
+    "record_type": "BillingAddress",
+    "jurisdiction": "EU_FR",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "OTHER",
+    "trkg_regulations": [
+      "GDPR"
+    ]
+  },
+  "rec_0089": {
+    "record_type": "TaxRecord",
+    "jurisdiction": "US",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "TAX",
+    "trkg_regulations": [
+      "IRS"
+    ]
+  },
+  "rec_0090": {
+    "record_type": "BenefitsEnrollment",
+    "jurisdiction": "CA",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "OTHER",
+    "trkg_regulations": [
+      "PIPEDA"
+    ]
+  },
+  "rec_0091": {
+    "record_type": "BenefitsEnrollment",
+    "jurisdiction": "EU_FR",
+    "PII": true,
+    "PHI": true,
+    "public_company": false,
+    "mapped_record_type": "OTHER",
+    "trkg_regulations": [
+      "GDPR"
+    ]
+  },
+  "rec_0092": {
+    "record_type": "Contract",
+    "jurisdiction": "CA",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "CONTRACT",
+    "trkg_regulations": [
+      "PIPEDA"
+    ]
+  },
+  "rec_0093": {
+    "record_type": "BenefitsEnrollment",
+    "jurisdiction": "EU_FR",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "OTHER",
+    "trkg_regulations": [
+      "GDPR"
+    ]
+  },
+  "rec_0094": {
+    "record_type": "AllergyRecord",
+    "jurisdiction": "US",
+    "PII": false,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "MEDICAL",
+    "trkg_regulations": []
+  },
+  "rec_0095": {
+    "record_type": "Chat",
+    "jurisdiction": "US_CA",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "CHAT",
+    "trkg_regulations": [
+      "CPRA"
+    ]
+  },
+  "rec_0096": {
+    "record_type": "PatientInvoice",
+    "jurisdiction": "US_CA",
+    "PII": true,
+    "PHI": true,
+    "public_company": true,
+    "mapped_record_type": "INVOICE",
+    "trkg_regulations": [
+      "CPRA",
+      "HIPAA",
+      "SEC",
+      "SOX"
+    ]
+  },
+  "rec_0097": {
+    "record_type": "BiometricData",
+    "jurisdiction": "CA",
+    "PII": false,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "OTHER",
+    "trkg_regulations": []
+  },
+  "rec_0098": {
+    "record_type": "MedicalRecord",
+    "jurisdiction": "CA",
+    "PII": false,
+    "PHI": true,
+    "public_company": false,
+    "mapped_record_type": "MEDICAL",
+    "trkg_regulations": []
+  },
+  "rec_0099": {
+    "record_type": "PatientInvoice",
+    "jurisdiction": "US_CA",
+    "PII": false,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "INVOICE",
+    "trkg_regulations": []
+  },
+  "rec_0100": {
+    "record_type": "MedicalRecord",
+    "jurisdiction": "EU_DE",
+    "PII": false,
+    "PHI": true,
+    "public_company": false,
+    "mapped_record_type": "MEDICAL",
+    "trkg_regulations": []
+  },
+  "rec_0101": {
+    "record_type": "Contract",
+    "jurisdiction": "US_CA",
+    "PII": false,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "CONTRACT",
+    "trkg_regulations": []
+  },
+  "rec_0102": {
+    "record_type": "BillingAddress",
+    "jurisdiction": "CA",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "OTHER",
+    "trkg_regulations": [
+      "PIPEDA"
+    ]
+  },
+  "rec_0103": {
+    "record_type": "BenefitsEnrollment",
+    "jurisdiction": "US_CA",
+    "PII": false,
+    "PHI": true,
+    "public_company": false,
+    "mapped_record_type": "OTHER",
+    "trkg_regulations": [
+      "HIPAA"
+    ]
+  },
+  "rec_0104": {
+    "record_type": "PatientInvoice",
+    "jurisdiction": "EU_FR",
+    "PII": true,
+    "PHI": false,
+    "public_company": true,
+    "mapped_record_type": "INVOICE",
+    "trkg_regulations": [
+      "GDPR",
+      "SOX"
+    ]
+  },
+  "rec_0105": {
+    "record_type": "Ticket",
+    "jurisdiction": "EU_FR",
+    "PII": false,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "TICKET",
+    "trkg_regulations": []
+  },
+  "rec_0106": {
+    "record_type": "BillingAddress",
+    "jurisdiction": "EU_DE",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "OTHER",
+    "trkg_regulations": [
+      "GDPR"
+    ]
+  },
+  "rec_0107": {
+    "record_type": "BillingAddress",
+    "jurisdiction": "US",
+    "PII": false,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "OTHER",
+    "trkg_regulations": []
+  },
+  "rec_0108": {
+    "record_type": "AutopsyReport",
+    "jurisdiction": "US",
+    "PII": false,
+    "PHI": true,
+    "public_company": false,
+    "mapped_record_type": "MEDICAL",
+    "trkg_regulations": [
+      "HIPAA"
+    ]
+  },
+  "rec_0109": {
+    "record_type": "TaxRecord",
+    "jurisdiction": "CA",
+    "PII": true,
+    "PHI": false,
+    "public_company": true,
+    "mapped_record_type": "TAX",
+    "trkg_regulations": [
+      "PIPEDA",
+      "SOX"
+    ]
+  },
+  "rec_0110": {
+    "record_type": "AllergyRecord",
+    "jurisdiction": "EU_FR",
+    "PII": false,
+    "PHI": true,
+    "public_company": false,
+    "mapped_record_type": "MEDICAL",
+    "trkg_regulations": []
+  },
+  "rec_0111": {
+    "record_type": "PatientInvoice",
+    "jurisdiction": "CA",
+    "PII": true,
+    "PHI": false,
+    "public_company": true,
+    "mapped_record_type": "INVOICE",
+    "trkg_regulations": [
+      "PIPEDA",
+      "SOX"
+    ]
+  },
+  "rec_0112": {
+    "record_type": "Invoice",
+    "jurisdiction": "US_CA",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "INVOICE",
+    "trkg_regulations": [
+      "CPRA"
+    ]
+  },
+  "rec_0113": {
+    "record_type": "BiometricData",
+    "jurisdiction": "EU_FR",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "OTHER",
+    "trkg_regulations": [
+      "GDPR"
+    ]
+  },
+  "rec_0114": {
+    "record_type": "Email",
+    "jurisdiction": "US_CA",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "EMAIL",
+    "trkg_regulations": [
+      "CPRA"
+    ]
+  },
+  "rec_0115": {
+    "record_type": "Ticket",
+    "jurisdiction": "CA",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "TICKET",
+    "trkg_regulations": [
+      "PIPEDA"
+    ]
+  },
+  "rec_0116": {
+    "record_type": "BenefitsEnrollment",
+    "jurisdiction": "CA",
+    "PII": false,
+    "PHI": true,
+    "public_company": false,
+    "mapped_record_type": "OTHER",
+    "trkg_regulations": []
+  },
+  "rec_0117": {
+    "record_type": "BillingAddress",
+    "jurisdiction": "EU_FR",
+    "PII": false,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "OTHER",
+    "trkg_regulations": []
+  },
+  "rec_0118": {
+    "record_type": "BankStatement",
+    "jurisdiction": "EU_FR",
+    "PII": true,
+    "PHI": false,
+    "public_company": true,
+    "mapped_record_type": "FINANCIAL",
+    "trkg_regulations": [
+      "GDPR",
+      "SOX"
+    ]
+  },
+  "rec_0119": {
+    "record_type": "MedicalRecord",
+    "jurisdiction": "EU_FR",
+    "PII": false,
+    "PHI": true,
+    "public_company": false,
+    "mapped_record_type": "MEDICAL",
+    "trkg_regulations": []
+  },
+  "rec_0120": {
+    "record_type": "Contract",
+    "jurisdiction": "US",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "CONTRACT",
+    "trkg_regulations": []
+  },
+  "rec_0121": {
+    "record_type": "TaxRecord",
+    "jurisdiction": "EU_FR",
+    "PII": false,
+    "PHI": false,
+    "public_company": true,
+    "mapped_record_type": "TAX",
+    "trkg_regulations": [
+      "SOX"
+    ]
+  },
+  "rec_0122": {
+    "record_type": "Contract",
+    "jurisdiction": "US_CA",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "CONTRACT",
+    "trkg_regulations": [
+      "CPRA"
+    ]
+  },
+  "rec_0123": {
+    "record_type": "BenefitsEnrollment",
+    "jurisdiction": "CA",
+    "PII": false,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "OTHER",
+    "trkg_regulations": []
+  },
+  "rec_0124": {
+    "record_type": "PatientInvoice",
+    "jurisdiction": "CA",
+    "PII": false,
+    "PHI": false,
+    "public_company": true,
+    "mapped_record_type": "INVOICE",
+    "trkg_regulations": [
+      "SOX"
+    ]
+  },
+  "rec_0125": {
+    "record_type": "MedicalRecord",
+    "jurisdiction": "US",
+    "PII": false,
+    "PHI": true,
+    "public_company": false,
+    "mapped_record_type": "MEDICAL",
+    "trkg_regulations": [
+      "HIPAA"
+    ]
+  },
+  "rec_0126": {
+    "record_type": "Contract",
+    "jurisdiction": "EU_DE",
+    "PII": false,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "CONTRACT",
+    "trkg_regulations": [
+      "HGB"
+    ]
+  },
+  "rec_0127": {
+    "record_type": "MedicalRecord",
+    "jurisdiction": "CA",
+    "PII": true,
+    "PHI": true,
+    "public_company": false,
+    "mapped_record_type": "MEDICAL",
+    "trkg_regulations": [
+      "PIPEDA"
+    ]
+  },
+  "rec_0128": {
+    "record_type": "PatientInvoice",
+    "jurisdiction": "CA",
+    "PII": true,
+    "PHI": true,
+    "public_company": false,
+    "mapped_record_type": "INVOICE",
+    "trkg_regulations": [
+      "PIPEDA"
+    ]
+  },
+  "rec_0129": {
+    "record_type": "Chat",
+    "jurisdiction": "CA",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "CHAT",
+    "trkg_regulations": [
+      "PIPEDA"
+    ]
+  },
+  "rec_0130": {
+    "record_type": "Invoice",
+    "jurisdiction": "EU_FR",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "INVOICE",
+    "trkg_regulations": [
+      "GDPR"
+    ]
+  },
+  "rec_0131": {
+    "record_type": "TaxRecord",
+    "jurisdiction": "EU_FR",
+    "PII": true,
+    "PHI": false,
+    "public_company": true,
+    "mapped_record_type": "TAX",
+    "trkg_regulations": [
+      "GDPR",
+      "SOX"
+    ]
+  },
+  "rec_0132": {
+    "record_type": "MedicalRecord",
+    "jurisdiction": "EU_DE",
+    "PII": false,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "MEDICAL",
+    "trkg_regulations": []
+  },
+  "rec_0133": {
+    "record_type": "BankStatement",
+    "jurisdiction": "EU_DE",
+    "PII": false,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "FINANCIAL",
+    "trkg_regulations": [
+      "HGB"
+    ]
+  },
+  "rec_0134": {
+    "record_type": "MedicalRecord",
+    "jurisdiction": "EU_FR",
+    "PII": true,
+    "PHI": true,
+    "public_company": false,
+    "mapped_record_type": "MEDICAL",
+    "trkg_regulations": [
+      "GDPR"
+    ]
+  },
+  "rec_0135": {
+    "record_type": "AutopsyReport",
+    "jurisdiction": "US",
+    "PII": false,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "MEDICAL",
+    "trkg_regulations": []
+  },
+  "rec_0136": {
+    "record_type": "TaxRecord",
+    "jurisdiction": "US",
+    "PII": false,
+    "PHI": false,
+    "public_company": true,
+    "mapped_record_type": "TAX",
+    "trkg_regulations": [
+      "FINRA",
+      "IRS",
+      "SEC",
+      "SOX"
+    ]
+  },
+  "rec_0137": {
+    "record_type": "AllergyRecord",
+    "jurisdiction": "EU_DE",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "MEDICAL",
+    "trkg_regulations": [
+      "GDPR"
+    ]
+  },
+  "rec_0138": {
+    "record_type": "BenefitsEnrollment",
+    "jurisdiction": "EU_DE",
+    "PII": false,
+    "PHI": true,
+    "public_company": false,
+    "mapped_record_type": "OTHER",
+    "trkg_regulations": []
+  },
+  "rec_0139": {
+    "record_type": "BankStatement",
+    "jurisdiction": "CA",
+    "PII": false,
+    "PHI": false,
+    "public_company": true,
+    "mapped_record_type": "FINANCIAL",
+    "trkg_regulations": [
+      "SOX"
+    ]
+  },
+  "rec_0140": {
+    "record_type": "AuditWorkpaper",
+    "jurisdiction": "CA",
+    "PII": false,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "AUDIT",
+    "trkg_regulations": []
+  },
+  "rec_0141": {
+    "record_type": "MedicalRecord",
+    "jurisdiction": "EU_DE",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "MEDICAL",
+    "trkg_regulations": [
+      "GDPR"
+    ]
+  },
+  "rec_0142": {
+    "record_type": "AllergyRecord",
+    "jurisdiction": "US_CA",
+    "PII": false,
+    "PHI": true,
+    "public_company": false,
+    "mapped_record_type": "MEDICAL",
+    "trkg_regulations": [
+      "HIPAA"
+    ]
+  },
+  "rec_0143": {
+    "record_type": "BiometricData",
+    "jurisdiction": "EU_DE",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "OTHER",
+    "trkg_regulations": [
+      "GDPR"
+    ]
+  },
+  "rec_0144": {
+    "record_type": "AdoptionRecord",
+    "jurisdiction": "CA",
+    "PII": true,
+    "PHI": false,
+    "public_company": false,
+    "mapped_record_type": "OTHER",
+    "trkg_regulations": [
+      "PIPEDA"
+    ]
+  },
+  "rec_0145": {
+    "record_type": "AuditWorkpaper",
+    "jurisdiction": "EU_DE",
+    "PII": false,
+    "PHI": false,
+    "public_company": true,
+    "mapped_record_type": "AUDIT",
+    "trkg_regulations": [
+      "HGB",
+      "SOX"
+    ]
+  },
+  "rec_0146": {
+    "record_type": "TaxRecord",
+    "jurisdiction": "US_CA",
+    "PII": false,
+    "PHI": false,
+    "public_company": true,
+    "mapped_record_type": "TAX",
+    "trkg_regulations": [
+      "FINRA",
+      "IRS",
+      "SEC",
+      "SOX"
+    ]
+  }
+}

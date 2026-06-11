@@ -255,13 +255,27 @@ class TestRegulationProfiles(unittest.TestCase):
         )
         self.assertTrue(self.profiles[Regulation.HGB].applies_to(record))
 
-    def test_sec_applies_to_us_financial(self):
+    def test_sec_applies_to_us_public_financial(self):
+        # SEC (like SOX/FINRA) is gated on is_public_company: a US financial
+        # record of a public company triggers it.
         record = Record(
             id="r11", type=RecordType.FINANCIAL, title="US Financial",
             created=datetime.now(), modified=datetime.now(),
             jurisdiction=Jurisdiction.US,
+            metadata={"is_public_company": True},
         )
         self.assertTrue(self.profiles[Regulation.SEC].applies_to(record))
+
+    def test_sec_does_not_apply_to_private_financial(self):
+        # Regression for the SEC over-counting bug: a private-company US
+        # financial record must NOT trigger SEC.
+        record = Record(
+            id="r11b", type=RecordType.FINANCIAL, title="Private US Financial",
+            created=datetime.now(), modified=datetime.now(),
+            jurisdiction=Jurisdiction.US,
+            metadata={"is_public_company": False},
+        )
+        self.assertFalse(self.profiles[Regulation.SEC].applies_to(record))
 
 
 # =============================================================================

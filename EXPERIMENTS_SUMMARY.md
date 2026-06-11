@@ -65,13 +65,26 @@ paper-ready `experiments/results/<id>_RESULTS.md`.
     SHACL Core, not parity** (RETENTION/HOLD only ~0.4–0.5 recall). Reported as
     measured per the honesty contract.
 
-### Pending — not started
+### Descoped — deliberately not pursued
 
-- **E2 — Enron loader.** NOT STARTED (per instruction). Must scaffold only;
-  must NOT silently download ~1.7 GB or install dependencies. BLOCKED on
-  data + NER.
-- **E4 — Independent-expert labeling kit.** NOT STARTED (per instruction).
-  PREP ONLY — do not fill in labels.
+- **E2 — Enron loader. DESCOPED (not blocked).** Enron was evaluated in prior
+  work and not pursued; the synthetic-only limitation is already stated honestly
+  in the paper, and **E4 covers the ground-truth-circularity concern better** (an
+  independent human labeler scores T-RKG's own applicability verdicts). No Enron
+  loader is scaffolded.
+
+### Pending — E4 label-then-score kit (prep only; human labels then scoring)
+
+- **E4 — Independent-expert applicability labeling.** A *label-then-score*
+  experiment, not a run experiment. Dataset is **provided** (not generated here):
+  `experiments/labeling/E4_labeling_sheet.csv` (146 records, attributes populated,
+  nine regulation columns blank for a human labeler, plus `unsure`) and
+  `experiments/labeling/E4_reference_key.csv` (an externally-computed reference
+  answer — **NOT ground truth**). Hidden ground truth is T-RKG's own applicability
+  predicate run over each row → `experiments/labeling/ground_truth_hidden.json`.
+  Workflow: (Step 4) diff T-RKG verdicts vs the reference key for human review
+  → (Step 5) scorer `experiments/labeling/score_labels.py` + `INSTRUCTIONS.md`
+  for the labeler. **PREP ONLY — no label values are ever written by the agent.**
 
 ### Cross-cutting work completed earlier (committed with this batch)
 
@@ -95,7 +108,10 @@ paper-ready `experiments/results/<id>_RESULTS.md`.
    `results/e6_RESULTS.md` written.
 2. ~~E1 scaffold + cache + tests~~ + ~~full composed-vs-siloed run~~ DONE
    (COMPLETE; see above).
-3. E2 Enron loader scaffold (BLOCKED) and E4 labeling kit (PREP ONLY). NOT STARTED.
+3. ~~E2 Enron loader~~ DESCOPED (prior-work eval, not pursued; §VIII limitation
+   stated; E4 covers ground-truth circularity better). E4 label-then-score kit:
+   ground truth generated → diff for review (STOP) → scorer + INSTRUCTIONS (PREP
+   ONLY; agent never writes labels).
 4. Wave 2: merge `results/*.json` without clobbering existing entries.
 5. Wave 3: data-driven figures, consistency check, `run_all` wiring
    (`--skip-external`), full suite green, finalize this summary.

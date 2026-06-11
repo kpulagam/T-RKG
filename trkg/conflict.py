@@ -152,7 +152,7 @@ def build_regulation_profiles() -> Dict[Regulation, RegulationProfile]:
         regulation=Regulation.SOX,
         applicable_record_types={
             RecordType.FINANCIAL, RecordType.AUDIT,
-            RecordType.WORKPAPER, RecordType.INVOICE
+            RecordType.WORKPAPER, RecordType.INVOICE, RecordType.TAX
         },
         applicable_jurisdictions=set(),  # Global for public companies
         metadata_conditions={"is_public_company": True},
@@ -194,11 +194,12 @@ def build_regulation_profiles() -> Dict[Regulation, RegulationProfile]:
     profiles[Regulation.SEC] = RegulationProfile(
         regulation=Regulation.SEC,
         applicable_record_types={
-            RecordType.FINANCIAL, RecordType.INVOICE
+            RecordType.FINANCIAL, RecordType.INVOICE, RecordType.TAX
         },
         applicable_jurisdictions={
             Jurisdiction.US, Jurisdiction.US_CA, Jurisdiction.US_NY
         },
+        metadata_conditions={"is_public_company": True},
         requirements=[
             RegulatoryRequirement(
                 regulation=Regulation.SEC,
@@ -213,7 +214,8 @@ def build_regulation_profiles() -> Dict[Regulation, RegulationProfile]:
     profiles[Regulation.FINRA] = RegulationProfile(
         regulation=Regulation.FINRA,
         applicable_record_types={
-            RecordType.EMAIL, RecordType.CHAT, RecordType.FINANCIAL
+            RecordType.EMAIL, RecordType.CHAT,
+            RecordType.FINANCIAL, RecordType.TAX
         },
         applicable_jurisdictions={
             Jurisdiction.US, Jurisdiction.US_CA, Jurisdiction.US_NY
@@ -281,7 +283,7 @@ def build_regulation_profiles() -> Dict[Regulation, RegulationProfile]:
         regulation=Regulation.HGB,
         applicable_record_types={
             RecordType.FINANCIAL, RecordType.INVOICE,
-            RecordType.AUDIT, RecordType.CONTRACT
+            RecordType.AUDIT, RecordType.CONTRACT, RecordType.TAX
         },
         applicable_jurisdictions={Jurisdiction.EU_DE},
         requirements=[
