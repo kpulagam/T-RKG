@@ -147,7 +147,9 @@ def build_regulation_profiles() -> Dict[Regulation, RegulationProfile]:
 
     # SOX reaches subsidiaries of US-listed companies regardless of location,
     # so applicable_jurisdictions is intentionally empty and applicability is
-    # gated on is_public_company.
+    # gated on is_public_company. Here is_public_company denotes a US-registered
+    # (SEC) issuer; the empty jurisdiction set models SOX's extraterritorial
+    # reach over such an issuer's financial records wherever they are held.
     profiles[Regulation.SOX] = RegulationProfile(
         regulation=Regulation.SOX,
         applicable_record_types={
@@ -211,11 +213,14 @@ def build_regulation_profiles() -> Dict[Regulation, RegulationProfile]:
         ]
     )
 
+    # FINRA Rule 4511 governs broker-dealer member firms' books and records.
+    # It is scoped to business communications (EMAIL/CHAT) — not generic
+    # FINANCIAL or TAX records, which belong to non-broker-dealer entities and
+    # are covered by SOX/SEC/IRS/HGB instead.
     profiles[Regulation.FINRA] = RegulationProfile(
         regulation=Regulation.FINRA,
         applicable_record_types={
-            RecordType.EMAIL, RecordType.CHAT,
-            RecordType.FINANCIAL, RecordType.TAX
+            RecordType.EMAIL, RecordType.CHAT
         },
         applicable_jurisdictions={
             Jurisdiction.US, Jurisdiction.US_CA, Jurisdiction.US_NY

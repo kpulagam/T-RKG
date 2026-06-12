@@ -277,6 +277,48 @@ class TestRegulationProfiles(unittest.TestCase):
         )
         self.assertFalse(self.profiles[Regulation.SEC].applies_to(record))
 
+    def test_finra_applies_to_us_public_email(self):
+        # FINRA Rule 4511 is scoped to broker-dealer business communications:
+        # a US public-company EMAIL triggers it.
+        record = Record(
+            id="r12", type=RecordType.EMAIL, title="Broker Email",
+            created=datetime.now(), modified=datetime.now(),
+            jurisdiction=Jurisdiction.US,
+            metadata={"is_public_company": True},
+        )
+        self.assertTrue(self.profiles[Regulation.FINRA].applies_to(record))
+
+    def test_finra_applies_to_us_public_chat(self):
+        record = Record(
+            id="r12b", type=RecordType.CHAT, title="Broker Chat",
+            created=datetime.now(), modified=datetime.now(),
+            jurisdiction=Jurisdiction.US,
+            metadata={"is_public_company": True},
+        )
+        self.assertTrue(self.profiles[Regulation.FINRA].applies_to(record))
+
+    def test_finra_does_not_apply_to_financial(self):
+        # Regression for the FINRA over-scoping fix: FINRA no longer reaches
+        # generic FINANCIAL records (those belong to SOX/SEC/IRS/HGB).
+        record = Record(
+            id="r12c", type=RecordType.FINANCIAL, title="US Financial",
+            created=datetime.now(), modified=datetime.now(),
+            jurisdiction=Jurisdiction.US,
+            metadata={"is_public_company": True},
+        )
+        self.assertFalse(self.profiles[Regulation.FINRA].applies_to(record))
+
+    def test_finra_does_not_apply_to_tax(self):
+        # Regression for the FINRA over-scoping fix: TAX records are IRS/HGB
+        # territory, not FINRA.
+        record = Record(
+            id="r12d", type=RecordType.TAX, title="US Tax Record",
+            created=datetime.now(), modified=datetime.now(),
+            jurisdiction=Jurisdiction.US,
+            metadata={"is_public_company": True},
+        )
+        self.assertFalse(self.profiles[Regulation.FINRA].applies_to(record))
+
 
 # =============================================================================
 # CONFLICT DETECTION TESTS
