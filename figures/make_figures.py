@@ -1,8 +1,8 @@
 """Render the paper figures as IEEE Access submission-grade assets.
 
-Data-driven figures (2, 3, 5, 7, noise_sweep) are computed live from
+Data-driven figures (2, 3, 5, 6, 7, noise_sweep) are computed live from
 experiments/results.json so they match the canonical run / MANIFEST.md exactly.
-Timing / propagation figures (4, 6, 8, 9) carry the published values unchanged
+Timing / propagation figures (4, 8, 9) carry the published values unchanged
 and are re-exported to vector PDF for submission quality.
 
 Every figure is written as a true vector PDF (plt.savefig .pdf) plus a 600-DPI
@@ -243,13 +243,16 @@ ax2.grid(False)
 ax1.set_title("Scalability: throughput and detection latency")
 save(fig, "fig4_scalability")
 
-# ---- Figure 6: propagation latency vs seed set -----------------------------
+# ---- Figure 6: propagation latency vs seed set (tab:largeseed) --------------
+# Canonical source: results.json e8_large_seed_propagation (100K corpus, depth 5).
+# tab:largeseed reports the seed-42 latency and the 10-seed-mean hold-set size;
+# both are reproduced live here so the figure matches the table exactly.
+e8 = R["e8_large_seed_propagation"]
 seeds_n = np.array([50, 500, 5000])
-latency = np.array([0.77, 2.6, 13.7])
-latency_sd = np.array([0.43, 0.6, 0.6])
+latency = np.array([e8[str(s)]["latency_ms"][0] for s in seeds_n])          # seed 42 == tab:largeseed
+hold = np.array([mean(e8[str(s)]["hold_size"]) for s in seeds_n])
 fig, ax = plt.subplots(figsize=(3.5, 2.5))
-ax.errorbar(seeds_n, latency, yerr=latency_sd, marker="o", linestyle="-",
-            ms=5, color="#1f4e79", capsize=2)
+ax.plot(seeds_n, latency, ms=5, **line("trkg"))
 ax.set_xscale("log")
 ax.set_yscale("log")
 ax.set_xlabel("Seed records")
@@ -258,7 +261,14 @@ ax.set_title("Propagation latency vs. seed set size (100K corpus)")
 slope = np.polyfit(np.log10(seeds_n), np.log10(latency), 1)[0]
 ax.text(0.05, 0.92, f"Empirical scaling exponent: {slope:.2f}",
         transform=ax.transAxes, fontsize=8, va="top")
+for x, y, h in zip(seeds_n, latency, hold):
+    ax.annotate(f"{h:,.0f} held", (x, y), textcoords="offset points",
+                xytext=(7, -9), fontsize=7)
 save(fig, "fig6_propagation_vs_seeds")
+report["fig6"] = {"seeds": seeds_n.tolist(),
+                  "latency_ms": [round(float(v), 2) for v in latency],
+                  "hold": [round(float(h)) for h in hold],
+                  "exponent": round(float(slope), 2)}
 
 # ---- Figure 8: propagation policies ----------------------------------------
 configs = ["Siloed", "Att", "Thread", "Att+Thread", "+Deriv", "All"]
