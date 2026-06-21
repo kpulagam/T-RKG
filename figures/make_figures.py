@@ -1,9 +1,9 @@
 """Render the paper figures as IEEE Access submission-grade assets.
 
-Data-driven figures (2, 3, 5, 6, 7, noise_sweep) are computed live from
+Data-driven figures (2, 3, 5, 6, 7, 8, noise_sweep) are computed live from
 experiments/results.json so they match the canonical run / MANIFEST.md exactly.
-Timing / propagation figures (4, 8, 9) carry the published values unchanged
-and are re-exported to vector PDF for submission quality.
+Timing figures (4, 9) carry the published values unchanged and are re-exported
+to vector PDF for submission quality.
 
 Every figure is written as a true vector PDF (plt.savefig .pdf) plus a 600-DPI
 PNG fallback, with Type-42 (TrueType) embedded fonts, and each data series is
@@ -270,13 +270,19 @@ report["fig6"] = {"seeds": seeds_n.tolist(),
                   "hold": [round(float(h)) for h in hold],
                   "exponent": round(float(slope), 2)}
 
-# ---- Figure 8: propagation policies ----------------------------------------
+# ---- Figure 8: propagation policies (tab:propagation) -----------------------
+# Canonical source: results.json e2_propagation (10K, 50 seeds, depth 10).
+e2 = R["e2_propagation"]
+e2_keys = ["None (Siloed)", "Attachment", "Thread", "Att + Thread",
+           "+ Derivation", "All types"]
 configs = ["Siloed", "Att", "Thread", "Att+Thread", "+Deriv", "All"]
-final = [50, 97, 71, 168, 183, 213]
-final_sd = [0, 14, 5, 36, 39, 54]
-ratios = [1.00, 1.94, 1.42, 3.36, 3.65, 4.26]
+base = mean(e2["None (Siloed)"]["final_counts"])
+final = [round(mean(e2[k]["final_counts"])) for k in e2_keys]
+final_sd = [round(sd(e2[k]["final_counts"])) for k in e2_keys]
+ratios = [mean(e2[k]["final_counts"]) / base for k in e2_keys]
 fig, ax = plt.subplots(figsize=(3.5, 2.6))
-bars = ax.bar(configs, final, yerr=final_sd, capsize=3, color="#1f4e79",
+bars = ax.bar(configs, final, yerr=final_sd, capsize=3,
+              color=STYLE["trkg"]["color"], hatch=STYLE["trkg"]["hatch"],
               edgecolor="black", linewidth=0.5)
 for b, r in zip(bars, ratios):
     ax.text(b.get_x() + b.get_width() / 2, b.get_height() + 6,
@@ -285,6 +291,8 @@ ax.set_ylabel("Hold set size")
 ax.set_title("Propagation expansion by relationship policy")
 plt.setp(ax.get_xticklabels(), rotation=20, ha="right")
 save(fig, "fig8_propagation_policies")
+report["fig8"] = {"configs": configs, "final": final, "final_sd": final_sd,
+                  "ratios": [round(r, 2) for r in ratios]}
 
 # ---- Figure 9: performance vs baselines ------------------------------------
 ops = ["Type query", "Hold propagation", "Temporal query"]
