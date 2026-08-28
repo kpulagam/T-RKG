@@ -4,3 +4,14 @@ __pycache__/
 .claude/
 experiments/cache/
 .DS_Store
+
+# Paper / submission artifacts (kept locally, re-added after publication)
+submission/
+# stray top-level paper build files (anchored to root; does not touch figures/ or experiments/)
+/*.pdf
+/*.tex
+/*.aux
+/*.bbl
+/*.blg
+/*.log
+/*.docx
