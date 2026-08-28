@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 540" font-family="Helvetica, Arial, sans-serif" font-size="13">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 44 880 496" width="880" height="496" font-family="Helvetica, Arial, sans-serif" font-size="13">
   <!-- T-RKG System Architecture (Figure 1) -->
 
   <defs>
@@ -23,11 +23,6 @@
       <stop offset="100%" stop-color="#e2b3b3"/>
     </linearGradient>
   </defs>
-
-  <!-- TITLE -->
-  <text x="440" y="24" text-anchor="middle" font-size="15" font-weight="bold">
-    Figure 1: T-RKG System Architecture
-  </text>
 
   <!-- LAYER 1: Source Systems -->
   <text x="20" y="76" font-weight="bold" fill="#333">1. Source Systems (content stays in place)</text>
