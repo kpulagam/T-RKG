@@ -1,0 +1,33 @@
+cff-version: 1.2.0
+message: "If you use this software, ontology, or methodology, please cite the paper below."
+title: "T-RKG: A Knowledge-Based System for Cross-System Regulatory Conflict Detection in Enterprise Records Governance"
+type: software
+authors:
+  - family-names: "Pulagam"
+    given-names: "Kishore"
+    affiliation: "Northwestern University; PayPal Data Services"
+  - family-names: "Sakalam"
+    given-names: "Sai"
+    affiliation: "Independent Researcher"
+doi: 10.1109/ACCESS.2026.3729794
+date-released: 2026-09-02
+license: CC-BY-4.0
+repository-code: "https://github.com/kpulagam/T-RKG"
+preferred-citation:
+  type: article
+  title: "T-RKG: A Knowledge-Based System for Cross-System Regulatory Conflict Detection in Enterprise Records Governance"
+  authors:
+    - family-names: "Pulagam"
+      given-names: "Kishore"
+      affiliation: "Northwestern University; PayPal Data Services"
+    - family-names: "Sakalam"
+      given-names: "Sai"
+      affiliation: "Independent Researcher"
+  journal: "IEEE Access"
+  volume: 14
+  start: 138420
+  end: 138439
+  year: 2026
+  doi: "10.1109/ACCESS.2026.3729794"
+  url: "https://ieeexplore.ieee.org/document/11675805"
+  license: CC-BY-4.0
