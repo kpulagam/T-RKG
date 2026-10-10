@@ -1,0 +1,673 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T-RKG Explorer</title>
+<meta name="description" content="Interactive explorer for T-RKG: see how regulatory conflicts appear only when a record's attributes from different enterprise systems are composed.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F3F5F7; --surface:#FFFFFF; --ink:#16202E; --muted:#5A6677; --rule:#D5DBE3; --faint:#E8ECF1;
+  --keep:#1C6E68; --keep-soft:#DDEFEC; --del:#7C3A78; --del-soft:#F2E4F1;
+  --crit:#B42318; --high:#B5520C; --med:#876600; --low:#5A6677;
+  --held:#16202E; --focus:#2F5D9E;
+  --serif:"Newsreader", Georgia, serif; --sans:"Public Sans", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0F141B; --surface:#161D27; --ink:#E6EBF1; --muted:#9AA6B5; --rule:#2A3442; --faint:#1D2633;
+    --keep:#4FB3A9; --keep-soft:#18302E; --del:#C885C3; --del-soft:#2E1E2D;
+    --crit:#F0675A; --high:#F0954A; --med:#D9B84A; --low:#9AA6B5; --held:#E6EBF1; --focus:#7FA8E8;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0F141B; --surface:#161D27; --ink:#E6EBF1; --muted:#9AA6B5; --rule:#2A3442; --faint:#1D2633;
+  --keep:#4FB3A9; --keep-soft:#18302E; --del:#C885C3; --del-soft:#2E1E2D;
+  --crit:#F0675A; --high:#F0954A; --med:#D9B84A; --low:#9AA6B5; --held:#E6EBF1; --focus:#7FA8E8;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 16px/1.55 var(--sans)}
+a{color:inherit;text-underline-offset:3px}
+a:hover{color:var(--focus)}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:3px}
+.wrap{max-width:1180px;margin:0 auto;padding-left:24px;padding-right:24px}
+@media (max-width:600px){.wrap{padding-left:16px;padding-right:16px}}
+
+header{padding-top:48px;padding-bottom:36px}
+.brand{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:12px 24px}
+h1{font:600 clamp(2.1rem,4.6vw,3.1rem)/1.05 var(--serif);margin:0;letter-spacing:-.01em}
+.lede{max-width:66ch;margin:14px 0 0;color:var(--muted);font-size:1.06rem}
+.links{display:flex;gap:18px;font-weight:500;font-size:.95rem}
+h2{font:600 1.65rem/1.2 var(--serif);margin:0 0 6px}
+.sub{color:var(--muted);margin:0 0 22px;max-width:70ch}
+section{padding-top:36px;padding-bottom:44px;border-top:1px solid var(--rule)}
+
+/* composition section */
+.comp{display:grid;grid-template-columns:290px minmax(0,1fr);gap:28px;align-items:start}
+@media (max-width:900px){.comp{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px}
+.field{margin:0 0 14px}
+.field:last-child{margin-bottom:0}
+label.lbl,.lbl{display:block;font-size:.83rem;font-weight:600;color:var(--muted);margin:0 0 5px}
+select{width:100%;font:500 .95rem var(--sans);color:var(--ink);background:var(--paper);border:1px solid var(--rule);border-radius:6px;padding:7px 9px}
+.group{border-top:1px solid var(--rule);padding-top:14px;margin-top:14px}
+.group h3{font:600 .95rem/1.3 var(--sans);margin:0 0 2px}
+.group p{font-size:.8rem;color:var(--muted);margin:0 0 10px}
+.check{display:flex;gap:9px;align-items:flex-start;font-size:.93rem;margin:6px 0;cursor:pointer}
+.check input{margin:3px 0 0;accent-color:var(--ink);width:16px;height:16px}
+
+.view{display:inline-grid;grid-template-columns:1fr 1fr;border:1px solid var(--ink);border-radius:8px;overflow:hidden;width:100%}
+.view button{font:600 .9rem var(--sans);padding:9px 8px;border:0;background:transparent;color:var(--ink);cursor:pointer}
+.view button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.view-note{font-size:.8rem;color:var(--muted);margin:8px 0 0}
+
+.verdict{font:500 1.18rem/1.4 var(--serif);margin:0 0 12px;min-height:1.6em}
+.verdict b{font-weight:600}
+.diagram{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:8px}
+.diagram svg{display:block;width:100%;height:auto}
+@media (max-width:700px){.diagram{overflow-x:auto}.diagram svg{min-width:640px}}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:.8rem;color:var(--muted);margin:10px 2px 0}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:18px;height:0;border-top:3px solid}
+
+.detail{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px}
+@media (max-width:760px){.detail{grid-template-columns:1fr}}
+.detail h3{font:600 1.05rem var(--serif);margin:0 0 8px}
+.clist{list-style:none;margin:0;padding:0}
+.clist li{border-left:3px solid var(--rule);padding:6px 0 8px 12px;margin:0 0 10px}
+.clist .pair{font-weight:600}
+.clist .meta{font-size:.82rem;color:var(--muted)}
+.clist .guide{font-size:.88rem;margin-top:3px}
+.clist li.missed{opacity:.75}
+.clist li.missed .pair{text-decoration:line-through;text-decoration-thickness:1px}
+.empty{color:var(--muted);font-size:.92rem}
+.why table{width:100%;border-collapse:collapse;font-size:.88rem}
+.why td{padding:6px 4px;border-bottom:1px solid var(--faint);vertical-align:top}
+.why td:first-child{width:26px;font-weight:700}
+.ok{color:var(--keep)} .no{color:var(--crit)}
+.regpick{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+.regpick button{font:600 .8rem var(--sans);padding:4px 9px;border-radius:999px;border:1px solid var(--rule);background:var(--paper);color:var(--muted);cursor:pointer}
+.regpick button.on{color:var(--ink);border-color:var(--ink)}
+.regpick button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+
+/* hold section */
+.holdgrid{display:grid;grid-template-columns:290px minmax(0,1fr);gap:28px;align-items:start}
+@media (max-width:900px){.holdgrid{grid-template-columns:minmax(0,1fr)}}
+.policy{display:grid;gap:8px}
+.policy label{display:grid;grid-template-columns:18px 1fr;gap:8px;padding:9px 10px;border:1px solid var(--rule);border-radius:8px;cursor:pointer;background:var(--paper)}
+.policy label:has(input:checked){border-color:var(--ink)}
+.policy input{margin:3px 0 0;accent-color:var(--ink)}
+.policy b{display:block;font-size:.93rem}
+.policy small{color:var(--muted);font-size:.8rem}
+.btn{font:600 .95rem var(--sans);padding:10px 14px;border-radius:8px;border:1px solid var(--ink);background:var(--ink);color:var(--paper);cursor:pointer;width:100%}
+.btn.ghost{background:transparent;color:var(--ink);margin-top:8px}
+.holdresult{margin-top:16px}
+
+footer{border-top:1px solid var(--rule);padding:26px 0 48px;color:var(--muted);font-size:.88rem}
+footer p{margin:0 0 6px;max-width:80ch}
+code{font-size:.88em;background:var(--faint);padding:1px 5px;border-radius:4px}
+
+svg text{font-family:var(--sans)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<header class="wrap">
+  <div class="brand">
+    <h1>T-RKG Explorer</h1>
+    <nav class="links" aria-label="Project links">
+      <a href="https://ieeexplore.ieee.org/document/11675805">Paper</a>
+      <a href="https://github.com/kpulagam/T-RKG">Code</a>
+      <a href="https://doi.org/10.1109/ACCESS.2026.3729794">DOI</a>
+    </nav>
+  </div>
+  <p class="lede">An enterprise record collects attributes from many systems. A privacy flag sits in the CRM, the listing status sits in the ERP, the jurisdiction travels with the record. Regulatory conflicts appear only when those attributes are put together. Change a record below and see what T-RKG finds, and what each system sees on its own.</p>
+</header>
+
+<main>
+<section class="wrap" aria-labelledby="s1">
+  <h2 id="s1">One record, five systems</h2>
+  <p class="sub">Teal regulations require the record to be kept. Plum regulations require it to be deleted on request. Lines between regulations are conflicts.</p>
+
+  <div class="comp">
+    <form class="panel" id="controls" onsubmit="return false">
+      <div class="field">
+        <label class="lbl" for="preset">Start from a real record</label>
+        <select id="preset"></select>
+      </div>
+      <div class="field">
+        <span class="lbl" id="viewlbl">How to reason</span>
+        <div class="view" role="group" aria-labelledby="viewlbl">
+          <button type="button" id="vComposed" aria-pressed="true">Composed</button>
+          <button type="button" id="vSiloed" aria-pressed="false">Siloed</button>
+        </div>
+        <p class="view-note" id="viewNote"></p>
+      </div>
+
+      <div class="group">
+        <h3>The record itself</h3>
+        <p>Always visible to the record's home system.</p>
+        <div class="field"><label class="lbl" for="fType">Record type</label><select id="fType"></select></div>
+        <div class="field"><label class="lbl" for="fJur">Jurisdiction</label><select id="fJur"></select></div>
+        <div class="field"><label class="lbl" for="fSys">Home system</label><select id="fSys"></select></div>
+      </div>
+      <div class="group">
+        <h3>Customer data system</h3>
+        <p>Owned by Salesforce CRM.</p>
+        <label class="check"><input type="checkbox" id="fPii"> Contains personal data</label>
+        <label class="check"><input type="checkbox" id="fPhi"> Contains health data</label>
+      </div>
+      <div class="group">
+        <h3>Financial system</h3>
+        <p>Owned by SAP ERP.</p>
+        <label class="check"><input type="checkbox" id="fPub"> Parent is a US-listed company</label>
+      </div>
+    </form>
+
+    <div>
+      <p class="verdict" id="verdict" aria-live="polite"></p>
+      <div class="diagram"><svg id="dia" viewBox="0 0 800 470" role="img" aria-labelledby="diaTitle"><title id="diaTitle">Source systems feeding one record, the regulations that apply to it, and conflicts between them</title></svg></div>
+      <div class="legend" aria-hidden="true">
+        <span><i class="sw" style="border-color:var(--crit)"></i>Critical</span>
+        <span><i class="sw" style="border-color:var(--high)"></i>High</span>
+        <span><i class="sw" style="border-color:var(--med)"></i>Medium</span>
+        <span><i class="sw" style="border-color:var(--low)"></i>Low</span>
+        <span><i class="sw" style="border-color:var(--muted);border-top-style:dashed"></i>Missed when siloed</span>
+      </div>
+
+      <div class="detail">
+        <div>
+          <h3>Conflicts</h3>
+          <ul class="clist" id="clist"></ul>
+        </div>
+        <div class="why">
+          <h3>Why a regulation applies</h3>
+          <div class="regpick" id="regpick" role="group" aria-label="Choose a regulation"></div>
+          <table id="whyTable"></table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="wrap" aria-labelledby="s2">
+  <h2 id="s2">A legal hold, followed through relationships</h2>
+  <p class="sub">These 11 records are a real neighbourhood from the synthetic corpus. Place a hold on the email in the middle and watch it spread along typed relationships. Which relationships carry the hold depends on the matter's policy.</p>
+  <div class="holdgrid">
+    <div class="panel">
+      <span class="lbl" id="pollbl">Propagation policy</span>
+      <div class="policy" role="radiogroup" aria-labelledby="pollbl">
+        <label><input type="radio" name="pol" value="conservative" checked><span><b>Conservative</b><small>Attachments and threads. The paper's default.</small></span></label>
+        <label><input type="radio" name="pol" value="standard"><span><b>Standard</b><small>Adds derived documents.</small></span></label>
+        <label><input type="radio" name="pol" value="comprehensive"><span><b>Comprehensive</b><small>Adds passing references.</small></span></label>
+      </div>
+      <div class="group">
+        <label class="check"><input type="checkbox" id="exempt"> Matter is a legal claim, so GDPR Art. 17(3)(e) suspends erasure</label>
+      </div>
+      <div class="group">
+        <button class="btn" id="placeHold" type="button">Place hold on email_001948</button>
+        <button class="btn ghost" id="resetHold" type="button">Clear hold</button>
+      </div>
+    </div>
+    <div>
+      <div class="diagram"><svg id="hold" viewBox="0 0 800 476" role="img" aria-labelledby="holdTitle"><title id="holdTitle">Records connected by attachment, thread, derivation and reference relationships</title></svg></div>
+      <div class="legend" aria-hidden="true">
+        <span><i class="sw" style="border-color:var(--ink)"></i>Attachment</span>
+        <span><i class="sw" style="border-color:var(--ink);border-top-width:5px;border-top-style:double"></i>Thread</span>
+        <span><i class="sw" style="border-color:var(--ink);border-top-style:dotted"></i>Derivation</span>
+        <span><i class="sw" style="border-color:var(--ink);border-top-style:dashed"></i>Reference</span>
+      </div>
+      <p class="verdict holdresult" id="holdVerdict" aria-live="polite"></p>
+      <ul class="clist" id="holdList"></ul>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="wrap">
+  <p>The rules on this page are a direct port of <code>trkg/conflict.py</code> and <code>trkg/composition.py</code>, checked against the Python implementation on all 10,000 records of <code>generate_test_dataset(10000, seed=42)</code>. The sample records come from that same corpus. All data is synthetic.</p>
+  <p>K. Pulagam and S. Sakalam, "T-RKG: A Knowledge-Based System for Cross-System Regulatory Conflict Detection in Enterprise Records Governance," <i>IEEE Access</i>, vol. 14, pp. 138420–138439, 2026.</p>
+</footer>
+
+<!-- ===================== Engine: mirrors trkg/conflict.py and trkg/composition.py ===================== -->
+<script id="engine">
+(function (root) {
+  const HIER = {
+    US_CA: ["US_CA", "US", "GLOBAL"], US_NY: ["US_NY", "US", "GLOBAL"], US: ["US", "GLOBAL"],
+    EU_DE: ["EU_DE", "EU", "GLOBAL"], EU_ES: ["EU_ES", "EU", "GLOBAL"], EU_FR: ["EU_FR", "EU", "GLOBAL"],
+    EU: ["EU", "GLOBAL"], UK: ["UK", "GLOBAL"], CA: ["CA", "GLOBAL"], GLOBAL: ["GLOBAL"]
+  };
+  const ancestors = j => HIER[j] || [j, "GLOBAL"];
+  const US3 = ["US", "US_CA", "US_NY"];
+
+  // build_regulation_profiles()
+  const PROFILES = {
+    GDPR:   { types: [], jur: ["EU", "EU_DE", "EU_ES", "EU_FR"], pii: true, req: "DELETE", text: "Erase personal data on request", cite: "GDPR Art. 17" },
+    SOX:    { types: ["FINANCIAL", "AUDIT", "WORKPAPER", "INVOICE", "TAX"], jur: [], public: true, req: "RETAIN", years: 7, text: "Keep financial records 7 years", cite: "SOX §802" },
+    HIPAA:  { types: [], jur: US3, phi: true, req: "RETAIN", years: 6, text: "Keep health records 6 years", cite: "45 CFR 164.530(j)" },
+    SEC:    { types: ["FINANCIAL", "INVOICE", "TAX"], jur: US3, public: true, req: "RETAIN", years: 5, text: "Keep financial records 5 years", cite: "SEC Rule 17a-4" },
+    FINRA:  { types: ["EMAIL", "CHAT"], jur: US3, public: true, req: "RETAIN", years: 3, text: "Keep business communications 3 years", cite: "FINRA Rule 4511" },
+    CPRA:   { types: [], jur: ["US_CA"], pii: true, req: "DELETE", text: "Delete consumer data on request", cite: "Cal. Civ. Code 1798.105" },
+    PIPEDA: { types: [], jur: ["CA"], pii: true, req: "DELETE", text: "Destroy personal data no longer needed", cite: "PIPEDA Principle 4.5" },
+    IRS:    { types: ["TAX", "FINANCIAL"], jur: US3, req: "RETAIN", years: 3, text: "Keep tax records at least 3 years", cite: "IRS Pub. 583" },
+    HGB:    { types: ["FINANCIAL", "INVOICE", "AUDIT", "CONTRACT", "TAX"], jur: ["EU_DE"], req: "RETAIN", years: 10, text: "Keep commercial books 10 years", cite: "HGB §257" }
+  };
+
+  // build_conflict_rules()
+  const RULES = [
+    ["GDPR", "SOX", "RETENTION_DELETION", "CRITICAL", "SOX retention prevails during the retention period; document the GDPR exception under Art. 17(3)(b). Delete after the SOX period ends."],
+    ["GDPR", "HIPAA", "RETENTION_DELETION", "CRITICAL", "HIPAA retention prevails for PHI; document the GDPR exception."],
+    ["GDPR", "HGB", "RETENTION_DELETION", "HIGH", "HGB retention prevails as a lawful basis under GDPR Art. 6(1)(c); document the legal obligation."],
+    ["CPRA", "SOX", "RETENTION_DELETION", "CRITICAL", "The SOX federal mandate prevails over state privacy law. Document the exception basis."],
+    ["CPRA", "SEC", "RETENTION_DELETION", "HIGH", "SEC federal retention prevails. Retain for the SEC period, then honour the CPRA deletion."],
+    ["CPRA", "IRS", "RETENTION_DELETION", "HIGH", "IRS retention prevails for tax records. Document the federal preemption basis."],
+    ["PIPEDA", "SOX", "RETENTION_DELETION", "HIGH", "Assess whether SOX applies to the Canadian subsidiary's records. If yes, SOX prevails."],
+    ["GDPR", "CPRA", "JURISDICTION", "MEDIUM", "Apply the stricter standard. Both require deletion; timing and scope need per-record analysis."],
+    ["GDPR", "PIPEDA", "JURISDICTION", "LOW", "GDPR is generally stricter; complying with GDPR typically satisfies PIPEDA."],
+    ["SOX", "SEC", "PRIORITY", "LOW", "Apply the longest retention period (SOX, 7 years)."],
+    ["SOX", "IRS", "PRIORITY", "LOW", "Apply the longest retention period (SOX, 7 years)."],
+    ["SOX", "HGB", "PRIORITY", "MEDIUM", "Apply the longest retention period (HGB, 10 years)."],
+    ["SEC", "IRS", "PRIORITY", "LOW", "Apply the longest retention period (SEC, 5 years)."],
+    ["HIPAA", "IRS", "PRIORITY", "LOW", "Apply the longest retention period (HIPAA, 6 years)."]
+  ];
+  const LOOKUP = {};
+  RULES.forEach(r => { LOOKUP[r[0] + "|" + r[1]] = r; LOOKUP[r[1] + "|" + r[0]] = r; });
+
+  // RegulationProfile.applies_to — record: {type, jurisdiction, pii, phi, public}
+  function checks(reg, rec) {
+    const p = PROFILES[reg], out = [];
+    if (p.types.length) out.push({ k: "type", ok: p.types.includes(rec.type), need: p.types });
+    if (p.jur.length) {
+      const anc = ancestors(rec.jurisdiction);
+      out.push({ k: "jur", ok: anc.some(j => p.jur.includes(j)), need: p.jur, anc });
+    }
+    if (p.pii !== undefined) out.push({ k: "pii", ok: !!rec.pii === p.pii });
+    if (p.phi !== undefined) out.push({ k: "phi", ok: !!rec.phi === p.phi });
+    if (p.public !== undefined) out.push({ k: "public", ok: rec.public === true });
+    return out;
+  }
+  const appliesTo = (reg, rec) => checks(reg, rec).every(c => c.ok);
+  const applicable = rec => Object.keys(PROFILES).filter(r => appliesTo(r, rec)).sort();
+
+  // ConflictDetector.detect_conflicts_for_record
+  function conflicts(rec, opts) {
+    opts = opts || {};
+    const app = applicable(rec), out = [];
+    for (let i = 0; i < app.length; i++) for (let j = i + 1; j < app.length; j++) {
+      const r = LOOKUP[app[i] + "|" + app[j]];
+      if (r) out.push({ a: r[0], b: r[1], type: r[2], severity: r[3], guide: r[4] });
+    }
+    if (opts.held) {
+      app.filter(r => PROFILES[r].req === "DELETE").forEach(del => {
+        if (del === "GDPR" && opts.exempt) { out.push({ a: del, b: "HOLD", type: "HOLD_DELETION", severity: "CRITICAL", suppressed: true }); return; }
+        out.push({ a: del, b: "HOLD", type: "HOLD_DELETION", severity: "CRITICAL", guide: "A legal hold always prevails over deletion requests. Document the hold basis and tell the requester about the delay." });
+      });
+    }
+    return out;
+  }
+
+  // composition.siloed_view
+  const HOME = { pii: "sys_crm", phi: "sys_crm", public: "sys_erp" };
+  function siloed(rec) {
+    const v = Object.assign({}, rec);
+    for (const k in HOME) if (HOME[k] !== rec.system) v[k] = k === "public" ? null : false;
+    return v;
+  }
+
+  // TRKGStore.propagate_hold (undirected over allowed relation types, unlimited depth)
+  const POLICIES = {
+    conservative: ["ATTACHMENT", "THREAD"],
+    standard: ["ATTACHMENT", "THREAD", "DERIVATION"],
+    comprehensive: ["ATTACHMENT", "THREAD", "DERIVATION", "REFERENCE"]
+  };
+  function propagate(seeds, edges, types, maxDepth) {
+    maxDepth = maxDepth === undefined ? -1 : maxDepth;
+    const visited = new Set(), level = {};
+    let frontier = new Set(seeds), depth = 0;
+    while (frontier.size && (maxDepth === -1 || depth < maxDepth)) {
+      const next = new Set();
+      for (const id of frontier) {
+        if (visited.has(id)) continue;
+        visited.add(id); level[id] = depth;
+        for (const e of edges) {
+          if (!types.includes(e.type)) continue;
+          if (e.from === id && !visited.has(e.to)) next.add(e.to);
+          if (e.to === id && !visited.has(e.from)) next.add(e.from);
+        }
+      }
+      frontier = next; depth++;
+    }
+    return { held: visited, level };
+  }
+
+  root.TRKG = { HIER, ancestors, PROFILES, RULES, checks, appliesTo, applicable, conflicts, HOME, siloed, POLICIES, propagate };
+})(typeof window !== "undefined" ? window : globalThis);
+</script>
+
+<script>
+(function () {
+  const T = window.TRKG;
+  const NS = "http://www.w3.org/2000/svg";
+  const $ = id => document.getElementById(id);
+  const el = (tag, attrs, parent, text) => {
+    const n = document.createElementNS(NS, tag);
+    for (const k in attrs) n.setAttribute(k, attrs[k]);
+    if (text !== undefined) n.textContent = text;
+    if (parent) parent.appendChild(n);
+    return n;
+  };
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // Real records from generate_test_dataset(10000, seed=42)
+  const DATA = {"presets":[{"id":"fin_00112","title":"Invoice - Q3 2021","type":"INVOICE","jurisdiction":"EU_DE","system":"sys_erp","pii":true,"phi":false,"public":true},{"id":"fin_00022","title":"Financial Statement - Q4 2024","type":"FINANCIAL","jurisdiction":"US_CA","system":"sys_erp","pii":true,"phi":false,"public":true},{"id":"contract_00002","title":"Contract - Vendor 002","type":"CONTRACT","jurisdiction":"EU_DE","system":"sys_dms","pii":true,"phi":false,"public":null},{"id":"fin_00000","title":"Financial Statement - Q4 2022","type":"FINANCIAL","jurisdiction":"US","system":"sys_erp","pii":false,"phi":false,"public":true},{"id":"email_001945","title":"Budget Planning","type":"EMAIL","jurisdiction":"EU","system":"sys_email","pii":true,"phi":false,"public":null}],
+    "hold":{"seed":"email_001948","nodes":[{"id":"doc_000082","title":"Report - 20240831.docx","type":"DOCUMENT","jurisdiction":"US_CA","system":"sys_dms","pii":false,"phi":false,"public":null},{"id":"doc_000124","title":"PDF - 20200729.pdf","type":"DOCUMENT","jurisdiction":"EU","system":"sys_dms","pii":false,"phi":false,"public":null},{"id":"doc_000599","title":"Proposal - 20220705.docx","type":"DOCUMENT","jurisdiction":"US_CA","system":"sys_dms","pii":false,"phi":false,"public":null},{"id":"doc_000740","title":"Spreadsheet - 20210402.xlsx","type":"DOCUMENT","jurisdiction":"UK","system":"sys_dms","pii":false,"phi":false,"public":null},{"id":"doc_001417","title":"Spreadsheet - 20240329.xlsx","type":"DOCUMENT","jurisdiction":"US","system":"sys_dms","pii":false,"phi":false,"public":null},{"id":"doc_002064","title":"Proposal - 20240924.docx","type":"DOCUMENT","jurisdiction":"US","system":"sys_dms","pii":false,"phi":false,"public":null},{"id":"doc_002493","title":"Memo - 20241028.docx","type":"DOCUMENT","jurisdiction":"US","system":"sys_dms","pii":false,"phi":false,"public":null},{"id":"doc_002972","title":"Artemis PDF - 20220924.pdf","type":"DOCUMENT","jurisdiction":"US_CA","system":"sys_dms","pii":false,"phi":false,"public":null},{"id":"email_001945","title":"Budget Planning","type":"EMAIL","jurisdiction":"EU","system":"sys_email","pii":true,"phi":false,"public":null},{"id":"email_001948","title":"Product Launch","type":"EMAIL","jurisdiction":"US","system":"sys_email","pii":false,"phi":false,"public":null},{"id":"email_001949","title":"Partnership Discussion","type":"EMAIL","jurisdiction":"US","system":"sys_email","pii":false,"phi":false,"public":null}],"edges":[{"from":"email_001945","to":"doc_000082","type":"ATTACHMENT"},{"from":"email_001945","to":"doc_002064","type":"ATTACHMENT"},{"from":"email_001945","to":"doc_000740","type":"ATTACHMENT"},{"from":"email_001948","to":"doc_000124","type":"ATTACHMENT"},{"from":"email_001948","to":"doc_002493","type":"ATTACHMENT"},{"from":"email_001948","to":"doc_002972","type":"ATTACHMENT"},{"from":"email_001948","to":"email_001945","type":"THREAD"},{"from":"email_001949","to":"email_001948","type":"THREAD"},{"from":"doc_000124","to":"doc_001417","type":"DERIVATION"},{"from":"doc_000599","to":"doc_002493","type":"REFERENCE"}]}};
+
+  const SYSTEMS = [
+    { id: "sys_email", name: "Email", vendor: "Exchange" },
+    { id: "sys_dms", name: "Documents", vendor: "SharePoint" },
+    { id: "sys_chat", name: "Chat", vendor: "Slack" },
+    { id: "sys_crm", name: "Customer data", vendor: "Salesforce CRM" },
+    { id: "sys_erp", name: "Finance", vendor: "SAP ERP" }
+  ];
+  const SYSNAME = Object.fromEntries(SYSTEMS.map(s => [s.id, s.vendor]));
+  const JUR = { US: "United States", US_CA: "California", US_NY: "New York", EU: "European Union", EU_DE: "Germany", EU_ES: "Spain", EU_FR: "France", UK: "United Kingdom", CA: "Canada", GLOBAL: "Global" };
+  const TYPES = ["EMAIL", "DOCUMENT", "CHAT", "ATTACHMENT", "SPREADSHEET", "PRESENTATION", "CONTRACT", "INVOICE", "MEDICAL", "FINANCIAL", "TAX", "AUDIT", "WORKPAPER", "LOG", "TICKET", "OTHER"];
+  const nice = s => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase().replace(/_/g, " ");
+  const REG_ORDER = ["GDPR", "CPRA", "PIPEDA", "SOX", "HGB", "SEC", "HIPAA", "IRS", "FINRA"];
+  const SEV = { CRITICAL: "var(--crit)", HIGH: "var(--high)", MEDIUM: "var(--med)", LOW: "var(--low)" };
+  const SEVW = { CRITICAL: 3.2, HIGH: 2.6, MEDIUM: 2.1, LOW: 1.6 };
+  const CTYPE = { RETENTION_DELETION: "keep vs delete", JURISDICTION: "two privacy regimes", PRIORITY: "different retention periods", HOLD_DELETION: "hold vs delete" };
+  const PRESET_NOTE = {
+    fin_00112: "paper's worked example",
+    fin_00022: "California, US-listed",
+    contract_00002: "German contract",
+    fin_00000: "US statement, no PII",
+    email_001945: "EU email with PII"
+  };
+
+  // ---------- state ----------
+  let rec = Object.assign({}, DATA.presets[0]);
+  let mode = "composed";
+  let focusReg = "GDPR";
+
+  // ---------- controls ----------
+  const preset = $("preset");
+  DATA.presets.forEach((p, i) => { const o = new Option(`${p.id} — ${PRESET_NOTE[p.id]}`, i); preset.add(o); });
+  preset.add(new Option("Custom (edited)", "custom"));
+  TYPES.forEach(t => $("fType").add(new Option(nice(t), t)));
+  Object.keys(JUR).forEach(j => $("fJur").add(new Option(`${JUR[j]} (${j})`, j)));
+  SYSTEMS.forEach(s => $("fSys").add(new Option(`${s.name} — ${s.vendor}`, s.id)));
+
+  function syncControls() {
+    $("fType").value = rec.type; $("fJur").value = rec.jurisdiction; $("fSys").value = rec.system;
+    $("fPii").checked = !!rec.pii; $("fPhi").checked = !!rec.phi; $("fPub").checked = rec.public === true;
+  }
+  preset.addEventListener("change", () => {
+    if (preset.value === "custom") return;
+    rec = Object.assign({}, DATA.presets[+preset.value]);
+    focusReg = T.applicable(rec)[0] || "GDPR";
+    syncControls(); render();
+  });
+  function edited() {
+    rec = Object.assign({}, rec, {
+      id: "custom", title: "Your record",
+      type: $("fType").value, jurisdiction: $("fJur").value, system: $("fSys").value,
+      pii: $("fPii").checked, phi: $("fPhi").checked, public: $("fPub").checked ? true : null
+    });
+    preset.value = "custom"; render();
+  }
+  ["fType", "fJur", "fSys", "fPii", "fPhi", "fPub"].forEach(id => $(id).addEventListener("change", edited));
+  function setMode(m) {
+    mode = m;
+    $("vComposed").setAttribute("aria-pressed", m === "composed");
+    $("vSiloed").setAttribute("aria-pressed", m === "siloed");
+    render();
+  }
+  $("vComposed").addEventListener("click", () => setMode("composed"));
+  $("vSiloed").addEventListener("click", () => setMode("siloed"));
+
+  // ---------- composition diagram ----------
+  function render() {
+    const view = mode === "siloed" ? T.siloed(rec) : rec;
+    const full = T.conflicts(rec), seen = T.conflicts(view);
+    const app = T.applicable(view), appFull = T.applicable(rec);
+    const key = c => c.a + "|" + c.b;
+    const seenKeys = new Set(seen.map(key));
+    const missed = mode === "siloed" ? full.filter(c => !seenKeys.has(key(c))) : [];
+
+    $("viewNote").textContent = mode === "composed"
+      ? "T-RKG joins every attribute, whichever system holds it."
+      : `Only what ${SYSNAME[rec.system]} can see on its own.`;
+
+    // verdict
+    const n = full.length, s = seen.length;
+    let v;
+    if (mode === "composed") {
+      v = n === 0 ? "No conflicts. " + (appFull.length ? `${appFull.join(", ")} ${appFull.length > 1 ? "apply" : "applies"} without contradiction.` : "No regulation applies to this record.")
+        : `<b>${n} conflict${n > 1 ? "s" : ""}</b> on this record. Switch to Siloed to see what ${SYSNAME[rec.system]} finds alone.`;
+    } else {
+      v = n === 0 ? "No conflicts, composed or siloed."
+        : missed.length === 0 ? `${SYSNAME[rec.system]} finds all ${n} conflict${n > 1 ? "s" : ""} on its own, because every trigger lives in that system.`
+        : `${SYSNAME[rec.system]} alone finds <b>${s} of ${n}</b>. The other ${missed.length} need an attribute from another system.`;
+    }
+    $("verdict").innerHTML = v;
+
+    const svg = $("dia");
+    [...svg.querySelectorAll(":scope > :not(title)")].forEach(x => x.remove());
+    const W = 800;
+    // columns
+    const SX = 14, SW = 170, RX = 262, RW = 236, GX = 590, GW = 120;
+    el("text", { x: SX, y: 24, "font-size": 13, "font-weight": 600, fill: "var(--muted)" }, svg, "Source systems");
+    el("text", { x: RX, y: 24, "font-size": 13, "font-weight": 600, fill: "var(--muted)" }, svg, "Composite record");
+    el("text", { x: GX, y: 24, "font-size": 13, "font-weight": 600, fill: "var(--muted)" }, svg, "Regulations");
+
+    // record card rows
+    const rows = [
+      { k: "type", label: "Type", val: nice(rec.type), owner: rec.system },
+      { k: "jurisdiction", label: "Jurisdiction", val: T.ancestors(rec.jurisdiction).join(" ⊂ "), owner: rec.system },
+      { k: "pii", label: "Personal data", val: rec.pii ? "Yes" : "No", owner: "sys_crm" },
+      { k: "phi", label: "Health data", val: rec.phi ? "Yes" : "No", owner: "sys_crm" },
+      { k: "public", label: "US-listed parent", val: rec.public === true ? "Yes" : "No", owner: "sys_erp" }
+    ];
+    const RY = 108, RH = 84 + rows.length * 50;
+    el("rect", { x: RX, y: RY, width: RW, height: RH, rx: 10, fill: "var(--paper)", stroke: "var(--ink)", "stroke-width": 1.5 }, svg);
+    el("text", { x: RX + 16, y: RY + 26, "font-size": 15, "font-weight": 700, fill: "var(--ink)" }, svg, rec.id === "custom" ? "Your record" : rec.id);
+    el("text", { x: RX + 16, y: RY + 45, "font-size": 12, fill: "var(--muted)" }, svg, rec.id === "custom" ? "edited attributes" : rec.title);
+
+    // systems
+    const sysY = {};
+    SYSTEMS.forEach((s, i) => {
+      const y = 40 + i * 84, home = s.id === rec.system;
+      sysY[s.id] = y + 30;
+      el("rect", { x: SX, y, width: SW, height: 60, rx: 8, fill: home ? "var(--ink)" : "var(--surface)", stroke: home ? "var(--ink)" : "var(--rule)", "stroke-width": 1.2 }, svg);
+      el("text", { x: SX + 14, y: y + 26, "font-size": 14, "font-weight": 600, fill: home ? "var(--paper)" : "var(--ink)" }, svg, s.name);
+      el("text", { x: SX + 14, y: y + 45, "font-size": 12, fill: home ? "var(--paper)" : "var(--muted)", opacity: home ? .8 : 1 }, svg, s.vendor + (home ? ", home system" : ""));
+    });
+
+    // rows + flows
+    rows.forEach((r, i) => {
+      const y = RY + 96 + i * 50;
+      const visible = mode === "composed" || r.owner === rec.system;
+      const isTrue = r.k === "type" || r.k === "jurisdiction" || r.val === "Yes";
+      // flow line from owning system
+      const fromY = sysY[r.owner], x1 = SX + SW, x2 = RX;
+      const path = `M${x1},${fromY} C${x1 + 50},${fromY} ${x2 - 50},${y - 4} ${x2},${y - 4}`;
+      if (isTrue || r.owner === rec.system) {
+        el("path", { d: path, fill: "none", stroke: visible ? "var(--ink)" : "var(--rule)", "stroke-width": visible ? 1.4 : 1.2, "stroke-dasharray": visible ? "" : "4 4", opacity: visible ? .55 : 1 }, svg);
+        if (!visible) {
+          const mx = (x1 + x2) / 2, my = (fromY + y - 4) / 2;
+          el("circle", { cx: mx, cy: my, r: 9, fill: "var(--surface)", stroke: "var(--crit)", "stroke-width": 1.5 }, svg);
+          el("path", { d: `M${mx - 4},${my - 4} L${mx + 4},${my + 4} M${mx + 4},${my - 4} L${mx - 4},${my + 4}`, stroke: "var(--crit)", "stroke-width": 1.6 }, svg);
+        }
+      }
+      el("text", { x: RX + 16, y: y - 12, "font-size": 11.5, fill: "var(--muted)" }, svg, r.label + (r.owner !== rec.system ? ` (from ${SYSNAME[r.owner]})` : ""));
+      const t = el("text", { x: RX + 16, y: y + 6, "font-size": 14, "font-weight": 600, fill: visible ? "var(--ink)" : "var(--muted)" }, svg, visible ? r.val : (isTrue ? "Not visible here" : "No"));
+      if (!visible && isTrue) t.setAttribute("font-style", "italic");
+    });
+
+    // regulations
+    const regY = {};
+    REG_ORDER.forEach((g, i) => {
+      const y = 40 + i * 46; regY[g] = y + 17;
+      const on = app.includes(g), del = T.PROFILES[g].req === "DELETE";
+      const lost = mode === "siloed" && appFull.includes(g) && !on;
+      const col = del ? "var(--del)" : "var(--keep)";
+      const grp = el("g", { tabindex: 0, role: "button", "aria-label": `${g}: ${on ? "applies" : "does not apply"}. Show why.`, style: "cursor:pointer" }, svg);
+      el("rect", { x: GX, y, width: GW, height: 34, rx: 17, fill: on ? col : "var(--surface)", stroke: on ? col : (lost ? col : "var(--rule)"), "stroke-width": focusReg === g ? 2.6 : 1.2, "stroke-dasharray": lost ? "4 3" : "" }, grp);
+      el("text", { x: GX + 16, y: y + 22, "font-size": 13.5, "font-weight": 700, fill: on ? "var(--surface)" : (lost ? col : "var(--muted)") }, grp, g);
+      el("text", { x: GX + GW - 14, y: y + 22, "font-size": 11, "text-anchor": "end", fill: on ? "var(--surface)" : "var(--muted)", opacity: on ? .9 : .8 }, grp, del ? "delete" : `keep ${T.PROFILES[g].years}y`);
+      grp.addEventListener("click", () => { focusReg = g; render(); });
+      grp.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); focusReg = g; render(); } });
+      if (on) {
+        const x1 = RX + RW, yR = RY + RH / 2;
+        el("path", { d: `M${x1},${yR} C${x1 + 40},${yR} ${GX - 40},${y + 17} ${GX},${y + 17}`, fill: "none", stroke: col, "stroke-width": 1.4, opacity: .7 }, svg);
+      }
+    });
+
+    // conflict arcs
+    const drawArc = (c, dashed, idx) => {
+      const y1 = regY[c.a], y2 = regY[c.b], x = GX + GW;
+      const bulge = 22 + Math.abs(y1 - y2) * 0.32 + idx * 2;
+      el("path", { d: `M${x},${y1} C${x + bulge},${y1} ${x + bulge},${y2} ${x},${y2}`, fill: "none",
+        stroke: dashed ? "var(--muted)" : SEV[c.severity], "stroke-width": dashed ? 1.5 : SEVW[c.severity], "stroke-dasharray": dashed ? "5 4" : "" }, svg);
+    };
+    seen.forEach((c, i) => drawArc(c, false, i));
+    missed.forEach((c, i) => drawArc(c, true, i));
+
+    // conflict list
+    const ul = $("clist"); ul.innerHTML = "";
+    const item = (c, isMissed) => {
+      const li = document.createElement("li");
+      if (isMissed) li.className = "missed";
+      li.style.borderLeftColor = isMissed ? "var(--rule)" : SEV[c.severity];
+      li.innerHTML = `<div class="pair">${c.a} vs ${c.b}</div>
+        <div class="meta">${nice(c.severity)} severity, ${CTYPE[c.type]}${isMissed ? ". Missed by " + SYSNAME[rec.system] + " alone" : ""}</div>
+        <div class="guide">${c.guide}</div>`;
+      ul.appendChild(li);
+    };
+    seen.forEach(c => item(c, false));
+    missed.forEach(c => item(c, true));
+    if (!seen.length && !missed.length) ul.innerHTML = `<li class="empty" style="border:0;padding:0">Nothing to resolve for this record.</li>`;
+
+    // why panel
+    const pick = $("regpick"); pick.innerHTML = "";
+    REG_ORDER.forEach(g => {
+      const b = document.createElement("button"); b.type = "button"; b.textContent = g;
+      if (app.includes(g)) b.className = "on";
+      b.setAttribute("aria-pressed", g === focusReg);
+      b.addEventListener("click", () => { focusReg = g; render(); });
+      pick.appendChild(b);
+    });
+    const p = T.PROFILES[focusReg];
+    const ck = T.checks(focusReg, view);
+    const lines = ck.map(c => {
+      let t;
+      if (c.k === "type") t = `Record type is ${c.need.map(nice).join(", ")} <span class="meta">(is ${nice(view.type)})</span>`;
+      if (c.k === "jur") t = `Jurisdiction falls under ${c.need.join(", ")} <span class="meta">(${c.anc.join(" ⊂ ")})</span>`;
+      if (c.k === "pii") t = "Record contains personal data" + (mode === "siloed" && rec.system !== "sys_crm" && rec.pii ? ' <span class="meta">(not visible to ' + SYSNAME[rec.system] + ")</span>" : "");
+      if (c.k === "phi") t = "Record contains health data" + (mode === "siloed" && rec.system !== "sys_crm" && rec.phi ? ' <span class="meta">(not visible to ' + SYSNAME[rec.system] + ")</span>" : "");
+      if (c.k === "public") t = "Parent is a US-listed company" + (mode === "siloed" && rec.system !== "sys_erp" && rec.public ? ' <span class="meta">(not visible to ' + SYSNAME[rec.system] + ")</span>" : "");
+      return `<tr><td class="${c.ok ? "ok" : "no"}">${c.ok ? "✓" : "✗"}</td><td>${t}</td></tr>`;
+    });
+    if (!p.types.length) lines.unshift(`<tr><td class="ok">✓</td><td>Any record type</td></tr>`);
+    const verdictRow = `<tr><td></td><td><b>${focusReg} ${T.appliesTo(focusReg, view) ? "applies" : "does not apply"}.</b> ${p.text} <span class="meta">(${p.cite})</span></td></tr>`;
+    $("whyTable").innerHTML = lines.join("") + verdictRow;
+  }
+
+  // ---------- hold propagation ----------
+  const H = DATA.hold;
+  const POS = {
+    email_001949: [8, 150], email_001948: [222, 150], email_001945: [222, 360],
+    doc_000124: [430, 20], doc_002493: [430, 100], doc_002972: [430, 180],
+    doc_000082: [430, 290], doc_002064: [430, 352], doc_000740: [430, 414],
+    doc_001417: [648, 20], doc_000599: [648, 100]
+  };
+  const NW = 150, NH = 48;
+  const nodeById = Object.fromEntries(H.nodes.map(n => [n.id, n]));
+  let holdState = { held: new Set(), level: {} }, timers = [];
+
+  function anchor(id, toward) {
+    const [x, y] = POS[id], [tx, ty] = POS[toward];
+    const cx = x + NW / 2, cy = y + NH / 2, dx = tx + NW / 2 - cx, dy = ty + NH / 2 - cy;
+    if (Math.abs(dx) * NH > Math.abs(dy) * NW) return [cx + Math.sign(dx) * NW / 2, cy + dy * (NW / 2) / Math.abs(dx)];
+    return [cx + dx * (NH / 2) / Math.abs(dy), cy + Math.sign(dy) * NH / 2];
+  }
+  function renderHold(shown) {
+    const svg = $("hold");
+    [...svg.querySelectorAll(":scope > :not(title)")].forEach(x => x.remove());
+    const pol = document.querySelector('input[name="pol"]:checked').value;
+    const allowed = T.POLICIES[pol];
+    H.edges.forEach(e => {
+      const [x1, y1] = anchor(e.from, e.to), [x2, y2] = anchor(e.to, e.from);
+      const on = allowed.includes(e.type);
+      const both = shown.has(e.from) && shown.has(e.to) && on;
+      const dash = { ATTACHMENT: "", THREAD: "", DERIVATION: "2 4", REFERENCE: "7 5" }[e.type];
+      const attrs = { x1, y1, x2, y2, stroke: both ? "var(--ink)" : "var(--rule)", "stroke-width": both ? 2 : 1.4, "stroke-dasharray": dash, "stroke-linecap": "round" };
+      el("line", attrs, svg);
+      if (e.type === "THREAD") el("line", Object.assign({}, attrs, { stroke: "var(--surface)", "stroke-width": both ? .8 : .6 }), svg);
+      if (e.type !== "ATTACHMENT") {
+        const mx = (x1 + x2) / 2, my = (y1 + y2) / 2, vertical = Math.abs(x1 - x2) < 4;
+        el("text", { x: vertical ? mx + 8 : mx, y: vertical ? my + 4 : my - 7, "text-anchor": vertical ? "start" : "middle", "font-size": 10.5, "font-weight": 600,
+          fill: on ? "var(--muted)" : "var(--rule)", stroke: "var(--surface)", "stroke-width": 4, "paint-order": "stroke" }, svg, nice(e.type));
+      }
+    });
+    H.nodes.forEach(n => {
+      const [x, y] = POS[n.id], held = shown.has(n.id), seed = n.id === H.seed;
+      const conflicted = held && T.conflicts(n, { held: true, exempt: $("exempt").checked }).some(c => c.type === "HOLD_DELETION" && !c.suppressed);
+      el("rect", { x, y, width: NW, height: NH, rx: 8, fill: held ? "var(--held)" : "var(--surface)", stroke: conflicted ? "var(--crit)" : (held ? "var(--held)" : "var(--rule)"), "stroke-width": conflicted ? 3 : 1.2 }, svg);
+      el("text", { x: x + 12, y: y + 20, "font-size": 12.5, "font-weight": 700, fill: held ? "var(--paper)" : "var(--ink)" }, svg, n.id + (seed ? " (seed)" : ""));
+      const regs = T.applicable(n), maxT = regs.length ? 15 : 21;
+      el("text", { x: x + 12, y: y + 36, "font-size": 11, fill: held ? "var(--paper)" : "var(--muted)", opacity: held ? .85 : 1 }, svg,
+        n.title.length > maxT ? n.title.slice(0, maxT - 1) + "…" : n.title);
+      if (regs.length) el("text", { x: x + NW - 10, y: y + 36, "text-anchor": "end", "font-size": 11, "font-weight": 700, fill: held ? "var(--paper)" : "var(--del)" }, svg, regs.join(", "));
+    });
+  }
+  function holdSummary() {
+    const pol = document.querySelector('input[name="pol"]:checked').value;
+    const ex = $("exempt").checked;
+    const held = holdState.held;
+    const ul = $("holdList"); ul.innerHTML = "";
+    if (!held.size) { $("holdVerdict").textContent = "No hold yet. Pick a policy and place the hold."; return; }
+    const extra = { conservative: "", standard: " Derivation pulls in one more document.", comprehensive: " A passing reference pulls in a proposal that only mentions the memo." }[pol];
+    let msg = `${held.size} of ${H.nodes.length} records held under the ${nice(pol)} policy.${extra}`;
+    const cs = [];
+    held.forEach(id => T.conflicts(nodeById[id], { held: true, exempt: ex }).filter(c => c.type === "HOLD_DELETION").forEach(c => cs.push([id, c])));
+    cs.forEach(([id, c]) => {
+      const li = document.createElement("li");
+      li.style.borderLeftColor = c.suppressed ? "var(--keep)" : "var(--crit)";
+      li.innerHTML = c.suppressed
+        ? `<div class="pair">${id}: ${c.a} vs hold — no conflict</div><div class="meta">Suppressed by the Art. 17(3) exemption</div><div class="guide">The matter is a legal claim, so the erasure right is lawfully suspended while the hold is active.</div>`
+        : `<div class="pair">${id}: ${c.a} vs hold</div><div class="meta">Critical severity, hold vs delete</div><div class="guide">This EU email holds personal data, so a GDPR erasure request could arrive while it is under hold. ${c.guide}</div>`;
+      ul.appendChild(li);
+    });
+    $("holdVerdict").textContent = msg;
+  }
+  function placeHold() {
+    timers.forEach(clearTimeout); timers = [];
+    const pol = document.querySelector('input[name="pol"]:checked').value;
+    holdState = T.propagate([H.seed], H.edges, T.POLICIES[pol]);
+    const maxL = Math.max(...Object.values(holdState.level));
+    if (reduceMotion) { renderHold(holdState.held); holdSummary(); return; }
+    for (let l = 0; l <= maxL; l++) {
+      timers.push(setTimeout(() => {
+        renderHold(new Set([...holdState.held].filter(id => holdState.level[id] <= l)));
+        if (l === maxL) holdSummary();
+      }, l * 520));
+    }
+    $("holdVerdict").textContent = "Following relationships…"; $("holdList").innerHTML = "";
+  }
+  $("placeHold").addEventListener("click", placeHold);
+  $("resetHold").addEventListener("click", () => { timers.forEach(clearTimeout); holdState = { held: new Set(), level: {} }; renderHold(new Set()); holdSummary(); });
+  document.querySelectorAll('input[name="pol"]').forEach(r => r.addEventListener("change", () => { if (holdState.held.size) placeHold(); else renderHold(new Set()); }));
+  $("exempt").addEventListener("change", () => { if (holdState.held.size) { renderHold(holdState.held); holdSummary(); } });
+
+  syncControls(); render();
+  renderHold(new Set()); holdSummary();
+})();
+</script>
+</body>
+</html>
