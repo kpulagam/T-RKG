@@ -15,10 +15,10 @@ T-RKG is a knowledge-based system that detects conflicts between regulations (GD
 
 ## Try it in your browser
 
-**[Open the T-RKG Explorer](https://kpulagam.github.io/T-RKG/)**. Pick a real record from the synthetic corpus, or edit its attributes, and see which regulations apply and where they conflict. Switch to **Siloed** to see what each source system finds on its own, then place a legal hold and watch it spread through attachments, threads, derivations, and references. The page uses the same rules as `trkg/conflict.py` and was checked against the Python code on all 10,000 records of the seed-42 corpus.
+**[Open the T-RKG Explorer](https://sai-sakalam.github.io/T-RKG/)**. Pick a real record from the synthetic corpus, or edit its attributes, and see which regulations apply and where they conflict. Switch to **Siloed** to see what each source system finds on its own, then place a legal hold and watch it spread through attachments, threads, derivations, and references. The page uses the same rules as `trkg/conflict.py` and was checked against the Python code on all 10,000 records of the seed-42 corpus.
 
 <p align="center">
-  <a href="https://kpulagam.github.io/T-RKG/"><img src="docs/explorer-preview.png" alt="T-RKG Explorer in Siloed mode: the finance system alone finds 1 of 3 conflicts on invoice fin_00112, because the personal-data flag lives in the CRM" width="760"></a>
+  <a href="https://sai-sakalam.github.io/T-RKG/"><img src="docs/explorer-preview.png" alt="T-RKG Explorer in Siloed mode: the finance system alone finds 1 of 3 conflicts on invoice fin_00112, because the personal-data flag lives in the CRM" width="760"></a>
 </p>
 
 ## The problem
